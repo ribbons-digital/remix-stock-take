@@ -1,5 +1,5 @@
 import type { LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { getOrders } from "~/api/order";
 
 import type { OrderType } from "~/types";
@@ -15,15 +15,13 @@ export default function OrdersIndex() {
   console.log(orders);
 
   return (
-    <div>
+    <div className="flex flex-col">
       Orders
       {orders.map((order) => {
         return (
-          <div key={order._id}>
-            {order.orderedItems.map((item, i) => {
-              return <div key={i}>{item.orderedItem.name}</div>;
-            })}
-          </div>
+          <Link key={order._id} prefetch="intent" to={order._id!}>
+            {order._id}
+          </Link>
         );
       })}
     </div>

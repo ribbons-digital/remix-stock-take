@@ -1,17 +1,28 @@
-import type { OrderItemParamsType, OrderItemType, ProductType } from "~/types";
+import type {
+  OrderItemParamsType,
+  OrderType,
+  OrderItemType,
+  ProductType,
+} from "~/types";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { getProducts } from "~/api/product";
 import { useLoaderData } from "@remix-run/react";
 
-import { createOrder } from "~/api/order";
+import { createOrder, getOrder } from "~/api/order";
 import OrderForm from "~/components/OrderForm";
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+  console.log(request);
+  console.log(params);
   const products = await getProducts();
+  const order = await getOrder(params.order!);
 
-  return json(products);
+  return json({
+    products,
+    order,
+  });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -38,8 +49,14 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect("/orders");
 };
 
-export default function NewOrderRoute() {
-  const products = useLoaderData<ProductType[]>();
+type LoaderData = {
+  products: ProductType[];
+  order: OrderType[];
+};
 
-  return <OrderForm products={products} />;
+export default function NewOrderRoute() {
+  const { products, order } = useLoaderData<LoaderData>();
+  console.log(order);
+
+  return <OrderForm products={products} order={order[0]} />;
 }
