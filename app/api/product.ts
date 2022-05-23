@@ -5,12 +5,12 @@ import { sanity } from "../utils/sanity-client";
 
 export const getProducts = async () => {
   const query =
-    '*[_type == "product"]{ _id, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity } }';
+    '*[_type == "product"]{ _id, _key, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity } }';
   return await sanity.fetch(query);
 };
 
 export const getProduct = async (id: string) => {
-  const query = `*[_type == "product" && _id == "${id}"]{ _id, quantity, "items": *[_type=="item" && references(^._id)]{ _id, quantity } }`;
+  const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, quantity, "items": *[_type=="item" && references(^._id)]{ _id, quantity } }`;
   return await sanity.fetch(query);
 };
 
@@ -21,7 +21,9 @@ export const createProduct = async ({ name, quantity, items }: ProductType) => {
     quantity,
     items,
   };
-  return await sanity.create(product);
+  return await sanity.create(product, {
+    autoGenerateArrayKeys: true,
+  });
 };
 
 export const updateProductItemsQuantity = async (
@@ -35,7 +37,7 @@ export const updateProductItemsQuantity = async (
   await Promise.all(
     items.map((item) => {
       return sanity
-        .patch(item._id, { set: { quantity: item.quantity + quantity } })
+        .patch(item._id!, { set: { quantity: item.quantity + quantity } })
         .commit();
     })
   );

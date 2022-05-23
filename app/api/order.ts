@@ -5,7 +5,7 @@ import { sanity } from "../utils/sanity-client";
 
 export const getOrders = async () => {
   const query =
-    '*[_type == "order"]{ _id, orderedItems[]{ orderedItem->{_id, name}, quantity } , date}';
+    '*[_type == "order"]{ _id, _key, orderedItems[]{ orderedItem->{_id, name}, quantity } , date}';
   return await sanity.fetch(query);
 };
 
@@ -15,5 +15,7 @@ export const createOrder = async ({ orderedItems, date }: OrderType) => {
     orderedItems,
     date,
   };
-  return await sanity.create(order);
+  return await sanity.create(order, {
+    autoGenerateArrayKeys: true,
+  });
 };
