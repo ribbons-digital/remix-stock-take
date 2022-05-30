@@ -1,6 +1,6 @@
+import { AppBar } from "@mui/material";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
-  Link,
   Links,
   LiveReload,
   Meta,
@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import ResponsiveAppBar from "./components/AppBar";
 
 import styles from "./tailwind.css";
 
@@ -27,9 +28,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Link to="/products">Products</Link>
-        <Link to="/orders">Orders</Link>
-        <div id="root">
+        <ResponsiveAppBar />
+
+        <div id="root" style={{ marginTop: "2rem" }}>
           <Outlet />
         </div>
         <ScrollRestoration />

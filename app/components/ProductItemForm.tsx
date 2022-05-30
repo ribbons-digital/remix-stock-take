@@ -4,7 +4,7 @@ import { Form } from "@remix-run/react";
 
 import type { ProductType } from "~/types";
 
-export default function ProductItemForm({ product }: { product: ProductType }) {
+function ProductItemForm({ product }: { product: ProductType }) {
   const [quantity, setQuantity] = React.useState(product.quantity);
 
   return (
