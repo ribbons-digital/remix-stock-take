@@ -2,6 +2,7 @@ import type { SanityDocumentStub } from "@sanity/client";
 import type {
   CreateProductParamsType,
   ItemsInProductResponseType,
+  OrdersInProductResponseType,
   ProductType,
   UpdateProductOrdersParamsType,
 } from "~/types";
@@ -26,9 +27,18 @@ export const getItemsInProduct = async ({
   id,
 }: {
   id: string;
-}): Promise<ItemsInProductResponseType> => {
+}): Promise<ItemsInProductResponseType[]> => {
   // const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity }, "orders": *[_type=="order" && references(^._id)]{ _id, orderNumber } }`;
   const query = `*[_type == "product" && _id == "${id}"]{ _id, items[]->{_id, quantity} }`;
+  return await sanity.fetch(query);
+};
+
+export const getOrdersInProduct = async ({
+  id,
+}: {
+  id: string;
+}): Promise<OrdersInProductResponseType[]> => {
+  const query = `*[_type == "product" && _id == "${id}"]{ _id, orders[]->{_id, orderNumber, date, orderedItems[]{ _id, quantity, orderedItem->{_id, name }} }}`;
   return await sanity.fetch(query);
 };
 

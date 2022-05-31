@@ -29,6 +29,11 @@ export type ItemsInProductResponseType = {
   items: Omit<ItemType, "_key" | "name" | "inProduct">[];
 };
 
+export type OrdersInProductResponseType = {
+  _id: string;
+  orders: OrderType[];
+};
+
 export type ItemType = {
   _id?: string;
   _key?: string;

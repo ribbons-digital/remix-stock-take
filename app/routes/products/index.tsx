@@ -129,8 +129,6 @@ export default function ProductsIndex() {
     ];
   }, []);
 
-  console.log(products);
-
   const handleClose = () => {
     setOpen(false);
   };
