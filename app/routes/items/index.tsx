@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
@@ -14,7 +15,7 @@ export const loader: LoaderFunction = async () => {
 
 export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
-  const { id, name } = JSON.parse(form.get("update") as string);
+  const { id, name, cost } = JSON.parse(form.get("update") as string);
 
   const quantity = Number(form.get(`quantity-${id}`) as string);
 
@@ -22,6 +23,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     id,
     name,
     quantity,
+    cost,
   });
 
   return redirect("/items");
@@ -78,6 +80,7 @@ const columns: GridColDef[] = [
             id: cellValues.id,
             name: cellValues.row.name,
             quantity: cellValues.row.quantity,
+            cost: cellValues.row.cost,
             inProduct: cellValues.row.inProduct,
           })}
         >
@@ -90,11 +93,22 @@ const columns: GridColDef[] = [
 
 export default function ItemsRoute() {
   const items = useLoaderData<ItemType[]>();
-  console.log({ items });
   const transition = useTransition();
+  const dollarAUD = Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "AUD",
+  });
+
+  const inventoryValue = React.useMemo(() => {
+    return items
+      .map((item) => item.quantity * item.cost)
+      .reduce((a, b) => a + b, 0);
+  }, [items]);
+
   return (
     <div className="flex flex-col container mx-auto max-w-4xl p-4">
-      <div className="w-full flex justify-end mb-6">
+      <div className="w-full flex justify-between mb-6">
+        <h1>Inventory value: {dollarAUD.format(inventoryValue)}</h1>
         <Link to="/items/new">
           <Button type="button" variant="contained">
             + Add New Item

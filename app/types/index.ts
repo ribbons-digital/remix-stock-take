@@ -39,6 +39,7 @@ export type ItemType = {
   _key?: string;
   name: string;
   quantity: number;
+  cost: number;
   inProduct: Omit<ProductType, "items" | "orders">[];
 };
 
@@ -83,6 +84,7 @@ export interface UpdateOrderParamsType {
 export type CreateItemParamsType = {
   name: string;
   quantity: string;
+  cost: number;
 };
 
 export type SanityReferenceType = {

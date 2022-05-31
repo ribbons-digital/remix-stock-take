@@ -15,10 +15,12 @@ export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
   const name = form.get("itemName") as string;
   const quantity = form.get("quantity") as string;
+  const cost = form.get("cost") as string;
 
   const fieldErrors = {
     name: validatefieldContent(name),
     quantity: validatefieldContent(quantity),
+    cost: validatefieldContent(cost),
   };
 
   const fields = { name, quantity };
@@ -33,6 +35,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     id: params.item!,
     name,
     quantity: Number(quantity),
+    cost: cost ? Number(cost) : 0,
   });
 
   return redirect("/items");
@@ -46,6 +49,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 type LoaderData = {
   name: string;
   quantity: number;
+  cost: number;
 };
 
 export default function NewItem() {

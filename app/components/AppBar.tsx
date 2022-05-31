@@ -74,7 +74,7 @@ const ResponsiveAppBar = () => {
           </Box>
 
           <Link to="/">
-            <img src={`/img/logo.png`} alt="logo" width="100px" />
+            <img src={`/img/logo.png`} alt="logo" width="80px" />
           </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, ml: 6 }}>

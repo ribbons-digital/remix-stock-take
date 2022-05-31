@@ -6,10 +6,9 @@ import Box from "@mui/material/Box";
 import type { OrderItemType, OrderType, ProductType } from "~/types";
 import {
   Form,
-  Link,
   useActionData,
-  useLoaderData,
   useNavigate,
+  useTransition,
 } from "@remix-run/react";
 import type { SelectChangeEvent } from "@mui/material";
 import { Divider } from "@mui/material";
@@ -61,6 +60,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
   // Hooks
   const navigate = useNavigate();
   const actionData = useActionData<OrderActionData>();
+  const transition = useTransition();
 
   // State
   const [open, setOpen] = React.useState(false);
@@ -167,9 +167,20 @@ export default function OrderForm({ products, order }: OrderFormProps) {
             Go back
           </Button>
           <div>
-            <Button variant="contained" type="submit">
-              {order ? "Update" : "Add"}
-            </Button>
+            {transition.state === "idle" && (
+              <Button variant="contained" type="submit">
+                {order ? "Update" : "Add"}
+              </Button>
+            )}
+            {transition.state === "submitting" && (
+              <Button
+                variant="contained"
+                type="submit"
+                disabled={transition.state === "submitting"}
+              >
+                {order ? "Updating..." : "Adding..."}
+              </Button>
+            )}
             {order && (
               <Button
                 className="ml-2"
@@ -211,7 +222,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           aria-labelledby="Add-order-item-modal"
           aria-describedby="A-modal-that-allows-you-to-add-order-items"
         >
-          <Box sx={modalStyle({ width: 600 })}>
+          <Box sx={modalStyle({ width: "auto" })}>
             <Typography id="Add-order-item-modal" variant="h6" component="h2">
               Order Item
             </Typography>
