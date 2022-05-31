@@ -2,6 +2,10 @@ export function validatefieldContent(content: string) {
   if (!content) {
     return `The field can't be empty`;
   }
+
+  if (isNaN(Number(content))) {
+    return `The field must be a number`;
+  }
 }
 
 export const modalStyle = ({ width }: { width: number }) => ({

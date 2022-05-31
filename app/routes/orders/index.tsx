@@ -56,10 +56,12 @@ export default function OrdersIndex() {
     navigate("/orders/new");
   };
   return (
-    <div className="flex flex-col container mx-auto max-w-4xl">
-      <Button className="mb-6" variant="contained" onClick={goToNewOrder}>
-        + Add New Order
-      </Button>
+    <div className="flex flex-col container mx-auto max-w-4xl p-4">
+      <div className="w-full flex justify-end mb-6">
+        <Button type="button" variant="contained" onClick={goToNewOrder}>
+          + Add New Order
+        </Button>
+      </div>
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={orders}

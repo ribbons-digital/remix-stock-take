@@ -1,4 +1,4 @@
-import { Box, Modal } from "@mui/material";
+import { Box, Button, Modal } from "@mui/material";
 import type { LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { getOrdersInProduct } from "~/api/product";
@@ -29,7 +29,6 @@ const columns: GridColDef[] = [
     headerName: "Order Number",
     flex: 60,
     renderCell: (cellValues) => {
-      console.log(cellValues);
       return (
         <Link to={`/orders/${cellValues.row.order._id as string}`}>
           <div className="underline underline-offset-1 text-blue-700">
@@ -67,7 +66,6 @@ export default function ProductOrders() {
   const params = useParams();
   const navigate = useNavigate();
   const orders = useLoaderData<LoaderData[]>();
-  console.log(orders);
 
   return (
     <Modal
@@ -78,6 +76,15 @@ export default function ProductOrders() {
       disablePortal={true}
     >
       <Box sx={modalStyle({ width: 800 })}>
+        <div className="w-full flex justify-end">
+          <Button
+            type="button"
+            variant="contained"
+            onClick={() => navigate(-1)}
+          >
+            Close
+          </Button>
+        </div>
         <div
           style={{
             display: "flex",

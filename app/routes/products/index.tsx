@@ -6,7 +6,6 @@ import {
   Link,
   useLoaderData,
   useNavigate,
-  useParams,
   useTransition,
 } from "@remix-run/react";
 import { getProducts, updateProductItemsQuantity } from "~/api/product";
@@ -15,8 +14,7 @@ import type { ProductType } from "~/types";
 import Button from "@mui/material/Button";
 import type { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Modal } from "@mui/material";
-import { modalStyle } from "~/utils";
+
 import React from "react";
 
 export const loader: LoaderFunction = async () => {
@@ -38,7 +36,6 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function ProductsIndex() {
-  const [open, setOpen] = React.useState(false);
   const products = useLoaderData<ProductType[]>();
   const transition = useTransition();
   const navigate = useNavigate();
@@ -74,6 +71,7 @@ export default function ProductsIndex() {
                 className="border-1 w-full"
                 id={`item-quantity-${cellValues.id}`}
                 name={`item-quantity-${cellValues.id}`}
+                type="number"
                 defaultValue={
                   cellValues.row.items && cellValues.row.items.length === 1
                     ? cellValues.row.items[0].quantity
@@ -129,17 +127,15 @@ export default function ProductsIndex() {
     ];
   }, []);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
-    <div className="flex flex-col container mx-auto max-w-4xl">
-      <Link to="/products/new">
-        <Button className="mb-6 w-full" variant="contained">
-          + Add New Product
-        </Button>
-      </Link>
+    <div className="flex flex-col container mx-auto max-w-4xl p-4">
+      <div className="w-full flex justify-end mb-6">
+        <Link to="/products/new">
+          <Button type="button" variant="contained">
+            + Add New Product
+          </Button>
+        </Link>
+      </div>
 
       <Form method="post">
         <div style={{ height: 800, width: "100%" }}>
@@ -149,10 +145,7 @@ export default function ProductsIndex() {
             pageSize={15}
             rowsPerPageOptions={[15]}
             getRowId={(row) => row._id}
-            loading={
-              transition.state === "loading" ||
-              transition.state === "submitting"
-            }
+            loading={transition.state === "submitting"}
           />
         </div>
       </Form>

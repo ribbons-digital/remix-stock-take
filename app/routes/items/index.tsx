@@ -58,6 +58,7 @@ const columns: GridColDef[] = [
             id={`quantity-${cellValues.id}`}
             name={`quantity-${cellValues.id}`}
             defaultValue={cellValues.row.quantity}
+            type="number"
           />
         </>
       );
@@ -92,12 +93,14 @@ export default function ItemsRoute() {
   console.log({ items });
   const transition = useTransition();
   return (
-    <div className="flex flex-col container mx-auto max-w-4xl">
-      <Link to="/items/new">
-        <Button className="mb-6 w-full" variant="contained">
-          + Add New Item
-        </Button>
-      </Link>
+    <div className="flex flex-col container mx-auto max-w-4xl p-4">
+      <div className="w-full flex justify-end mb-6">
+        <Link to="/items/new">
+          <Button type="button" variant="contained">
+            + Add New Item
+          </Button>
+        </Link>
+      </div>
       <Form method="post">
         <div style={{ height: 800, width: "100%" }}>
           <DataGrid

@@ -15,6 +15,8 @@ import { useLoaderData } from "@remix-run/react";
 import { createOrder, getOrder, updateOrder } from "~/api/order";
 import OrderForm from "~/components/OrderForm";
 import { deleteItem, updateItemQuantity } from "~/api/item";
+import { validatefieldContent } from "~/utils";
+import type { OrderActionData } from "./new";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const products = await getProducts();
@@ -43,14 +45,37 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   });
 };
 
+const badRequest = (data: OrderActionData) => {
+  return json(data, { status: 400 });
+};
+
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  const date = form.get("orderDate") as string;
+  const orderDate = form.get("orderDate") as string;
   const orderId = form.get("orderId") as string;
   const deleteOrder = form.get("delete") as string;
   const orderNumber = form.get("orderNumber") as string;
   const orderedItemsJsonString = form.get("orderedItems") as string;
   const items = JSON.parse(orderedItemsJsonString) as OrderItemType[];
+
+  const fieldErrors = {
+    orderNumber: validatefieldContent(orderNumber),
+    orderDate: validatefieldContent(orderDate),
+  };
+
+  const fields = { orderNumber, orderDate };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({
+      fieldErrors,
+      fields,
+    });
+  }
+
+  if (items.length === 0) {
+    return badRequest({
+      formError: "Please add one or more products to the order",
+    });
+  }
 
   if (deleteOrder) {
     await deleteItem({ id: orderId });
@@ -72,7 +97,7 @@ export const action: ActionFunction = async ({ request }) => {
         orderId,
         orderNumber,
         orderedItems,
-        date,
+        date: orderDate,
       });
 
       await Promise.all(
@@ -100,7 +125,7 @@ export const action: ActionFunction = async ({ request }) => {
       await createOrder({
         orderNumber,
         orderedItems,
-        date,
+        date: orderDate,
       });
     }
 

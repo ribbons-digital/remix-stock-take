@@ -82,15 +82,13 @@ export default function ProductItemList({
         },
       },
     ];
-  }, [items]);
+  }, [items, productId]);
 
   const handleSelectItem = (event: SelectChangeEvent) => {
     setSelectedItemId(event.target.value);
   };
 
   const transition = useTransition();
-
-  console.log(items);
 
   return (
     <>

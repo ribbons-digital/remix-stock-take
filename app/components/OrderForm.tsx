@@ -4,7 +4,13 @@ import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import type { OrderItemType, OrderType, ProductType } from "~/types";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import type { SelectChangeEvent } from "@mui/material";
 import { Divider } from "@mui/material";
 import { TextField } from "@mui/material";
@@ -12,6 +18,7 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import type { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid";
 import { modalStyle } from "~/utils";
+import type { OrderActionData } from "~/routes/orders/new";
 
 const modalButtonStyle = {
   display: "flex",
@@ -51,6 +58,11 @@ type OrderFormProps = {
 };
 
 export default function OrderForm({ products, order }: OrderFormProps) {
+  // Hooks
+  const navigate = useNavigate();
+  const actionData = useActionData<OrderActionData>();
+
+  // State
   const [open, setOpen] = React.useState(false);
   const [orderItems, setOrderItems] = React.useState<OrderItemType[]>(
     order?.orderedItems ?? []
@@ -64,6 +76,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
   // );
   const [isEditOrderItem, setIsEditOrderItem] = React.useState<boolean>(false);
 
+  // Helper functions
   const clearModalFields = () => {
     setSelectedProductId("");
     setSelectedProductQuantity("");
@@ -148,7 +161,28 @@ export default function OrderForm({ products, order }: OrderFormProps) {
 
   return (
     <Form method="post">
-      <div className="flex flex-col max-w-4xl mx-auto">
+      <div className="flex flex-col max-w-4xl mx-auto p-4">
+        <div className="w-full flex justify-between mb-2">
+          <Button type="button" onClick={() => navigate(-1)}>
+            Go back
+          </Button>
+          <div>
+            <Button variant="contained" type="submit">
+              {order ? "Update" : "Add"}
+            </Button>
+            {order && (
+              <Button
+                className="ml-2"
+                variant="contained"
+                color="error"
+                type="submit"
+                name="delete"
+              >
+                Delete
+              </Button>
+            )}
+          </div>
+        </div>
         <TextField
           id="order-number"
           label="Order Number"
@@ -156,7 +190,20 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           type="number"
           sx={{ py: 1, width: "100%" }}
           defaultValue={order?.orderNumber}
+          aria-invalid={
+            Boolean(actionData?.fieldErrors?.orderNumber) || undefined
+          }
+          aria-describedby={
+            actionData?.fieldErrors?.orderNumber
+              ? "order-number-error"
+              : undefined
+          }
         />
+        {actionData?.fieldErrors?.orderNumber ? (
+          <p className="text-red-600" role="alert" id="order-number-error">
+            {actionData.fieldErrors.orderNumber}
+          </p>
+        ) : null}
 
         <Modal
           open={open}
@@ -170,7 +217,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
             </Typography>
             <Typography
               id="A-modal-that-allows-you-to-add-order-items"
-              sx={{ mt: 2 }}
+              sx={{ my: 2 }}
             >
               Select a product from the list and set the quantity you want to
               add to this order
@@ -219,7 +266,15 @@ export default function OrderForm({ products, order }: OrderFormProps) {
               <Button sx={{ mr: 2 }} variant="outlined" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button variant="contained" onClick={handleAddOrderItem}>
+              <Button
+                variant="contained"
+                onClick={handleAddOrderItem}
+                disabled={
+                  !selectedProductId ||
+                  !selectedProductQuantity ||
+                  selectedProductQuantity === "0"
+                }
+              >
                 {isEditOrderItem ? "Update" : "Add"}
               </Button>
             </div>
@@ -259,12 +314,13 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           </div>
         </div>
         <Divider />
-        <input
-          type="hidden"
-          name="orderedItems"
-          defaultValue={JSON.stringify(orderItems)}
-        />
+
         <div style={{ height: 400, width: "100%" }}>
+          {actionData?.formError ? (
+            <p className="text-red-600 mb-1" role="alert" id="item-error">
+              {actionData.formError}
+            </p>
+          ) : null}
           <DataGrid
             rows={orderItems}
             columns={columns}
@@ -282,7 +338,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           />
         </div>
 
-        <label htmlFor="orderDate" className="text-xl font-bold mt-16">
+        <label htmlFor="orderDate" className="text-xl font-bold mt-8">
           Order Date:
         </label>
         <TextField
@@ -291,24 +347,20 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           name="orderDate"
           className="border-2"
           defaultValue={order ? order.date : ""}
+          aria-invalid={
+            Boolean(actionData?.fieldErrors?.orderDate) || undefined
+          }
+          aria-describedby={
+            actionData?.fieldErrors?.orderDate ? "order-date-error" : undefined
+          }
         />
+        {actionData?.fieldErrors?.orderDate ? (
+          <p className="text-red-600" role="alert" id="order-date-error">
+            {actionData.fieldErrors.orderDate}
+          </p>
+        ) : null}
 
         <input type="hidden" name="orderId" value={order?._id} />
-
-        <Button className="mt-6" variant="contained" type="submit">
-          {order ? "Update" : "Create"}
-        </Button>
-        {order && (
-          <Button
-            className="mt-2"
-            variant="contained"
-            color="error"
-            type="submit"
-            name="delete"
-          >
-            Delete
-          </Button>
-        )}
       </div>
     </Form>
   );

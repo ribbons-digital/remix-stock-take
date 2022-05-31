@@ -1,5 +1,10 @@
 import { Button, Divider, TextField } from "@mui/material";
-import { Form, useActionData, useTransition } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useNavigate,
+  useTransition,
+} from "@remix-run/react";
 import type { ProductActionData } from "~/routes/products/new";
 import type { ItemType, ProductType } from "~/types";
 import ProductItemList from "./ProductItemList";
@@ -12,9 +17,32 @@ type ProductFormProps = {
 export default function ProductForm({ product, items }: ProductFormProps) {
   const transition = useTransition();
   const actionData = useActionData<ProductActionData>();
+  const navigate = useNavigate();
 
   return (
-    <Form method="post" className="container mx-auto max-w-4xl">
+    <Form method="post" className="container mx-auto max-w-4xl p-4">
+      <div className="w-full flex justify-between mb-2">
+        <Button type="button" onClick={() => navigate(-1)}>
+          Go back
+        </Button>
+        <Button
+          variant="contained"
+          name="submit"
+          type="submit"
+          value={product?._id}
+          disabled={transition.state === "submitting"}
+        >
+          {product &&
+          (transition.state === "idle" || transition.state === "loading")
+            ? "Update"
+            : !product &&
+              (transition.state === "idle" || transition.state === "loading")
+            ? "Add"
+            : transition.state === "submitting"
+            ? "processing..."
+            : ""}
+        </Button>
+      </div>
       <TextField
         id="productName"
         name="productName"
@@ -28,7 +56,7 @@ export default function ProductForm({ product, items }: ProductFormProps) {
         }
       />
       {actionData?.fieldErrors?.name ? (
-        <p className="form-validation-error" role="alert" id="name-error">
+        <p className="text-red-600" role="alert" id="name-error">
           {actionData.fieldErrors.name}
         </p>
       ) : null}
@@ -51,24 +79,6 @@ export default function ProductForm({ product, items }: ProductFormProps) {
         </p>
       ) : null} */}
 
-      <Button
-        className="mt-2 w-full"
-        variant="contained"
-        name="submit"
-        type="submit"
-        value={product?._id}
-        disabled={transition.state === "submitting"}
-      >
-        {product &&
-        (transition.state === "idle" || transition.state === "loading")
-          ? "Update"
-          : !product &&
-            (transition.state === "idle" || transition.state === "loading")
-          ? "Add"
-          : transition.state === "submitting"
-          ? "processing..."
-          : ""}
-      </Button>
       {product && (
         <div className="w-full mt-6">
           <label id="items" className="text-xl font-bold">

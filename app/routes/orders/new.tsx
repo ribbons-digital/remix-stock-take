@@ -17,6 +17,23 @@ import { useLoaderData } from "@remix-run/react";
 import { createOrder } from "~/api/order";
 import OrderForm from "~/components/OrderForm";
 import { updateItemQuantity } from "~/api/item";
+import { validatefieldContent } from "~/utils";
+
+export type OrderActionData = {
+  formError?: string;
+  fieldErrors?: {
+    orderNumber: string | undefined;
+    orderDate: string | undefined;
+  };
+  fields?: {
+    orderNumber: string;
+    orderDate: string;
+  };
+};
+
+const badRequest = (data: OrderActionData) => {
+  return json(data, { status: 400 });
+};
 
 export const loader: LoaderFunction = async () => {
   const products = await getProducts();
@@ -26,10 +43,29 @@ export const loader: LoaderFunction = async () => {
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  const date = form.get("orderDate") as string;
+  const orderDate = form.get("orderDate") as string;
   const orderNumber = form.get("orderNumber") as string;
   const orderedItemsJsonString = form.get("orderedItems") as string;
   const items = JSON.parse(orderedItemsJsonString) as OrderItemType[];
+
+  const fieldErrors = {
+    orderNumber: validatefieldContent(orderNumber),
+    orderDate: validatefieldContent(orderDate),
+  };
+
+  const fields = { orderNumber, orderDate };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({
+      fieldErrors,
+      fields,
+    });
+  }
+
+  if (items.length === 0) {
+    return badRequest({
+      formError: "Please add one or more products to the order",
+    });
+  }
 
   const orderedItems = items.map((item) => {
     return {
@@ -44,7 +80,7 @@ export const action: ActionFunction = async ({ request }) => {
   const order = await createOrder({
     orderNumber,
     orderedItems,
-    date,
+    date: orderDate,
   });
 
   await Promise.all(
