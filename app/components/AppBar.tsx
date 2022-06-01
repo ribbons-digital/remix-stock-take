@@ -11,13 +11,16 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
+import type { User } from "@supabase/supabase-js";
 
-const pages = ["Products", "Orders", "Items"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const pages = ["Products", "Orders", "Items", "Log out"];
 
-const ResponsiveAppBar = () => {
+type PropType = {
+  user?: User | null;
+};
+
+const ResponsiveAppBar = ({ user }: PropType) => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -31,20 +34,22 @@ const ResponsiveAppBar = () => {
   };
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" className="mb-4">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
+            {user && (
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenNavMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -63,13 +68,29 @@ const ResponsiveAppBar = () => {
                 display: { xs: "block", md: "none" },
               }}
             >
-              {pages.map((page) => (
-                <Link key={page} to={`/${page.toLowerCase()}`}>
-                  <MenuItem onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                </Link>
-              ))}
+              {pages.map((page) => {
+                if (page === "Log out") {
+                  return (
+                    <Link to="/logout">
+                      <Button
+                        type="button"
+                        name="logout"
+                        style={{ width: "100%" }}
+                      >
+                        {page}
+                      </Button>
+                    </Link>
+                  );
+                } else {
+                  return (
+                    <Link key={page} to={`/${page.toLowerCase()}`}>
+                      <MenuItem onClick={handleCloseNavMenu}>
+                        <Typography textAlign="center">{page}</Typography>
+                      </MenuItem>
+                    </Link>
+                  );
+                }
+              })}
             </Menu>
           </Box>
 
@@ -77,17 +98,38 @@ const ResponsiveAppBar = () => {
             <img src={`/img/logo.png`} alt="logo" width="80px" />
           </Link>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, ml: 6 }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={() => {}}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                <Link to={`/${page.toLowerCase()}`}>{page}</Link>
-              </Button>
-            ))}
-          </Box>
+          {user && (
+            <Box
+              sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, ml: 6 }}
+            >
+              {pages.map(
+                (page) =>
+                  page !== "Log out" && (
+                    <Button
+                      key={page}
+                      onClick={() => {}}
+                      sx={{ my: 2, color: "white", display: "block" }}
+                    >
+                      <Link to={`/${page.toLowerCase()}`}>{page}</Link>
+                    </Button>
+                  )
+              )}
+            </Box>
+          )}
+          {user && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Link to="/logout">
+                <Button
+                  type="button"
+                  name="logout"
+                  style={{ width: "100%" }}
+                  className="text-white"
+                >
+                  Log out
+                </Button>
+              </Link>
+            </Box>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

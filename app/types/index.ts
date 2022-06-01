@@ -1,3 +1,5 @@
+import type { ApiError, User } from "@supabase/supabase-js";
+
 export type ProductType = {
   _id?: string;
   _key?: string;
@@ -91,3 +93,13 @@ export type SanityReferenceType = {
   _type: string;
   _ref: string;
 };
+
+export type AuthType =
+  | {
+      user: User | null;
+      error?: undefined;
+    }
+  | {
+      user?: undefined;
+      error: ApiError | null;
+    };

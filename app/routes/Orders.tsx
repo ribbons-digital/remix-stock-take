@@ -1,9 +1,18 @@
-import { Outlet } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node";
+import { Outlet, useLoaderData } from "@remix-run/react";
+import ResponsiveAppBar from "~/components/AppBar";
+import type { AuthType } from "~/types";
+import { isLoggedIn } from "~/utils";
 
-export default function Products() {
+export const loader: LoaderFunction = async ({ request }) => {
+  return await isLoggedIn({ request });
+};
+
+export default function Orders() {
+  const { user } = useLoaderData<AuthType>();
   return (
     <>
-      <h1>This is a list of products</h1>
+      <ResponsiveAppBar user={user} />
       <Outlet />
     </>
   );

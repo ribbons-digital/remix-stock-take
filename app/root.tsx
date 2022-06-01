@@ -1,5 +1,9 @@
 import { AppBar } from "@mui/material";
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -28,9 +32,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <ResponsiveAppBar />
-
-        <div id="root" style={{ marginTop: "2rem" }}>
+        <div id="root">
           <Outlet />
         </div>
         <ScrollRestoration />
