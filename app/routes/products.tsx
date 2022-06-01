@@ -10,6 +10,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Products() {
   const { user } = useLoaderData<AuthType>();
+  console.log({ user });
   return (
     <>
       <ResponsiveAppBar user={user} />

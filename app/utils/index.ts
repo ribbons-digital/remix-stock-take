@@ -59,6 +59,13 @@ export async function isLoggedIn({
       session.get("access_token")
     );
 
+    if (!user) {
+      let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
+      throw redirect(`/login?${searchParams}`, {
+        headers: { "Set-Cookie": await destroySession(session) },
+      });
+    }
+
     // if no error then get then set authenticated session
     // to match the user associated with the access_token
     if (!sessionErr) {
