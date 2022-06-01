@@ -66,12 +66,18 @@ export default function Signup() {
               type="password"
               sx={{ py: 1, width: "50%" }}
             />
-            <div className="flex justify-between w-1/2">
-              <Button variant="contained" name="signup" type="submit">
+            <div className="flex flex-col items-center w-1/2">
+              <Button
+                variant="contained"
+                name="signup"
+                type="submit"
+                className="w-full"
+              >
                 Sign up
               </Button>
+              <div className="text-blue-600 mt-4">Already have an account?</div>
               <Link to="/login">
-                <Button variant="outlined" name="login" type="submit">
+                <Button name="login" type="button" className="text-blue-600">
                   Log in
                 </Button>
               </Link>

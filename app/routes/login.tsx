@@ -51,11 +51,11 @@ export default function Login() {
   return (
     <div>
       <ResponsiveAppBar user={null} />
-      <main>
+      <main className="container mx-auto max-w-4xl p-4">
         <h2 className="font-bold text-2xl text-center mb-2">
           Nomad Nature Stock Take
         </h2>
-        <Form method="post" className="container mx-auto max-w-4xl p-4">
+        <Form method="post">
           <div className="flex flex-1 items-center flex-col">
             <TextField
               id="email"
@@ -71,15 +71,21 @@ export default function Login() {
               type="password"
               sx={{ py: 1, width: "50%" }}
             />
-            <div className="flex justify-between w-1/2">
+            <div className="flex flex-col items-center w-1/2">
+              <Button
+                variant="contained"
+                name="login"
+                type="submit"
+                className="w-full"
+              >
+                Log in
+              </Button>
+              <div className="text-blue-600 mt-4">Don't have an account?</div>
               <Link to="/signup">
-                <Button variant="outlined" name="signup" type="submit">
+                <Button name="signup" type="button" className="text-blue-600">
                   Sign up
                 </Button>
               </Link>
-              <Button variant="contained" name="login" type="submit">
-                Log in
-              </Button>
             </div>
           </div>
         </Form>

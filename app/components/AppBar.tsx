@@ -71,7 +71,7 @@ const ResponsiveAppBar = ({ user }: PropType) => {
               {pages.map((page) => {
                 if (page === "Log out") {
                   return (
-                    <Link to="/logout">
+                    <Link to="/logout" key={page}>
                       <Button
                         type="button"
                         name="logout"
