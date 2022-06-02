@@ -62,12 +62,12 @@ export default function OrdersIndex() {
           + Add New Order
         </Button>
       </div>
-      <div style={{ height: 400, width: "100%" }}>
+      <div style={{ height: 800, width: "100%" }}>
         <DataGrid
           rows={orders}
           columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
+          pageSize={15}
+          rowsPerPageOptions={[15]}
           getRowId={(row) => row._id}
           onRowClick={(row) => {
             navigate(`/orders/${row.id}`);
