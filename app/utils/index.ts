@@ -1,5 +1,4 @@
 import { redirect } from "@remix-run/node";
-import type { ApiError, User } from "@supabase/supabase-js";
 import { destroySession, getSession } from "~/services/session.server";
 import { supabase } from "~/services/supabase";
 import type { AuthType } from "~/types";
