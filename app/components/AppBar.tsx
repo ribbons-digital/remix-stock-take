@@ -117,7 +117,7 @@ const ResponsiveAppBar = ({ user }: PropType) => {
             </Box>
           )}
           {user && (
-            <Box sx={{ flexGrow: 0 }}>
+            <Box sx={{ flexGrow: 0, display: { xs: "none", md: "flex" } }}>
               <Link to="/logout">
                 <Button
                   type="button"
