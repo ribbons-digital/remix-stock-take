@@ -1,4 +1,6 @@
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { createProduct } from "~/api/product";
+import type { ItemActionData } from "~/routes/items/new";
 import { destroySession, getSession } from "~/services/session.server";
 import { supabase } from "~/services/supabase";
 import type { AuthType } from "~/types";
@@ -6,6 +8,12 @@ import type { AuthType } from "~/types";
 export function validatefieldContent(content: string) {
   if (!content) {
     return `The field can't be empty`;
+  }
+}
+
+export function validateCheckBoxes(value: string[]) {
+  if (!value || value.length === 0) {
+    return `Please select one or more products`;
   }
 }
 
@@ -19,7 +27,7 @@ export const modalStyle = ({ width }: { width: number | string }) => ({
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
-  height: "70%",
+  height: "auto",
   overflow: "scroll",
 });
 
@@ -42,10 +50,10 @@ export async function isLoggedIn({
 }): Promise<AuthType> {
   const redirectTo = new URL(request.url).pathname;
 
-  console.log(request.headers.get("Cookie"));
+  // console.log(request.headers.get("Cookie"));
 
   let session = await getSession(request.headers.get("Cookie"));
-  console.log(session.has("access_token"));
+  // console.log(session.has("access_token"));
 
   // if there is no access token in the header then
   // the user is not authenticated, go to login
@@ -88,3 +96,24 @@ export async function signOut({ request }: { request: Request }) {
     headers: { "Set-Cookie": await destroySession(session) },
   });
 }
+
+const badRequest = (data: ItemActionData) => {
+  return json(data, { status: 400 });
+};
+
+export const addProduct = async (newProduct: string, redirectURL: string) => {
+  const fieldErrors = {
+    productName: validatefieldContent(newProduct),
+  };
+
+  const fields = { productName: newProduct };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({
+      fieldErrors,
+      fields,
+    });
+  }
+
+  await createProduct({ name: newProduct });
+  return redirect(redirectURL);
+};

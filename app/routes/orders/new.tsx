@@ -1,22 +1,21 @@
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import {
+  getItemsInProduct,
+  getProducts,
+  updateOrdersInProduct,
+} from "~/api/product";
 import type {
   ItemType,
   OrderItemParamsType,
   OrderItemType,
   ProductType,
 } from "~/types";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import {
-  getItemsInProduct,
-  getProducts,
-  updateOrdersInProduct,
-} from "~/api/product";
-import { useLoaderData } from "@remix-run/react";
 
+import { updateItemQuantity } from "~/api/item";
 import { createOrder } from "~/api/order";
 import OrderForm from "~/components/OrderForm";
-import { updateItemQuantity } from "~/api/item";
 import { validatefieldContent } from "~/utils";
 
 export type OrderActionData = {
@@ -43,6 +42,7 @@ export const loader: LoaderFunction = async () => {
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
+
   const orderDate = form.get("orderDate") as string;
   const orderNumber = form.get("orderNumber") as string;
   const orderedItemsJsonString = form.get("orderedItems") as string;

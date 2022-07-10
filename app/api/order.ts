@@ -2,6 +2,7 @@ import type { SanityDocumentStub } from "@sanity/client";
 import type {
   CreateOrderParamsType,
   OrderResponseType,
+  OrderType,
   UpdateOrderParamsType,
 } from "~/types";
 
@@ -9,7 +10,20 @@ import { sanity } from "../utils/sanity-client";
 
 export const getOrders = async () => {
   const query =
-    '*[_type == "order"]{ _id, _key, orderNumber, orderedItems[]{ orderedItem->{_id, name}, quantity } , date}';
+    '*[_type == "order"] | order(date desc) { _id, _key, orderNumber, orderedItems[]{ orderedItem->{_id, name}, quantity } , date}';
+  return await sanity.fetch(query);
+};
+
+export const getMonthlyOrders = async () => {
+  const query = '*[_type == "order"] | order(date asc) { _id, date}';
+  return await sanity.fetch(query);
+};
+
+export const getOrdersByDateRange = async (
+  startDate: string,
+  endDate: string
+): Promise<OrderType[]> => {
+  const query = `*[_type == "order" && date > "${startDate}" && date < "${endDate}" ]{ _id, _key, _updatedAt, orderNumber, orderedItems[]{ orderedItem->{_id, name}, quantity } , date}`;
   return await sanity.fetch(query);
 };
 

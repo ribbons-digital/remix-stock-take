@@ -17,6 +17,20 @@ export const getProducts = async () => {
   return await sanity.fetch(query);
 };
 
+export const getOrdersInProductByDateRange = async (
+  startDate: string,
+  endDate: string
+) => {
+  const query = `*[_type == "product" && count(orders[]) > 0]{
+    _id, name, 
+    "orders": *[_type == "order" && date > "${startDate}" && date < "${endDate}"  && references(^._id)]{
+      _id, updatedAt, date
+    }
+  }`;
+
+  return await sanity.fetch(query);
+};
+
 export const getProduct = async ({ id }: { id: string }) => {
   // const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity }, "orders": *[_type=="order" && references(^._id)]{ _id, orderNumber } }`;
   const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, items[]->{_id, _key, name, quantity}, orders[]->{_id, orderNumber} }`;

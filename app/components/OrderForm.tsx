@@ -1,23 +1,28 @@
-import React from "react";
+import type { SelectChangeEvent } from "@mui/material";
+import {
+  Divider,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import type { OrderItemType, OrderType, ProductType } from "~/types";
+import type { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import {
   Form,
   useActionData,
   useNavigate,
   useTransition,
 } from "@remix-run/react";
-import type { SelectChangeEvent } from "@mui/material";
-import { Divider } from "@mui/material";
-import { TextField } from "@mui/material";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import type { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-import { DataGrid } from "@mui/x-data-grid";
-import { modalStyle } from "~/utils";
+import React from "react";
 import type { OrderActionData } from "~/routes/orders/new";
+import type { OrderItemType, OrderType, ProductType } from "~/types";
+import { modalStyle } from "~/utils";
 
 const modalButtonStyle = {
   display: "flex",
@@ -372,6 +377,11 @@ export default function OrderForm({ products, order }: OrderFormProps) {
         ) : null}
 
         <input type="hidden" name="orderId" value={order?._id} />
+        <input
+          type="hidden"
+          name="orderedItems"
+          value={JSON.stringify(orderItems)}
+        />
       </div>
     </Form>
   );
