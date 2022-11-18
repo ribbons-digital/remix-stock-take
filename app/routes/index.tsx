@@ -3,11 +3,11 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Container,
   Grid,
   IconButton,
   Typography,
 } from "@mui/material";
-import { Container } from "@mui/system";
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
