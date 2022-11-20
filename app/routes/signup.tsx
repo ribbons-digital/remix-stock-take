@@ -1,46 +1,51 @@
 import { Button, TextField } from "@mui/material";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Link, Form, useActionData, useLoaderData } from "@remix-run/react";
+import { Link, Form, useActionData } from "@remix-run/react";
+import { createServerClient } from "@supabase/auth-helpers-remix";
 import ResponsiveAppBar from "~/components/AppBar";
-import { commitSession, getSession } from "~/services/session.server";
 import { supabase } from "~/services/supabase";
-import type { AuthType } from "~/types";
-import { isLoggedIn } from "~/utils";
 
 export let action: ActionFunction = async ({ request }) => {
   let form = await request.formData();
-  let email = form.get("email") as string;
-  let password = form.get("password") as string;
+  let signupEmail = form.get("email") as string;
+  let signupPassword = form.get("password") as string;
+
+  const response = new Response();
 
   await supabase.auth.signOut();
 
-  // sign up the user
-  let {
-    session: sessionData,
-    user,
-    error: signUpError,
-  } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  const supabaseClient = createServerClient(
+    process.env.SUPABASE_PROJ_URL!,
+    process.env.SUPABASE_PUBLIC_KEY!,
+    { request, response }
+  );
 
-  if (!signUpError) {
+  // sign up the user
+  const { data, error } = await supabaseClient.auth.signUp({
+    email: String(signupEmail),
+    password: String(signupPassword),
+  });
+  if (!error) {
     // all good, set session and move on
-    let session = await getSession(request.headers.get("Cookie"));
-    session.set("access_token", sessionData?.access_token);
+    // let session = await getSession(request.headers.get("Cookie"));
+    // session.set("access_token", sessionData?.access_token);
     return redirect("/", {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
+      headers: response.headers,
     });
   }
 
   // else return the error
-  return { user, signUpError };
+  return json(
+    {
+      user: data?.user,
+      error,
+    },
+    { headers: response.headers }
+  );
 };
 
-export default function Signup() {
+export default function Signup(): JSX.Element {
   const actionData = useActionData();
 
   return (

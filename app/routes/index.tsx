@@ -11,6 +11,7 @@ import {
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { createServerClient } from "@supabase/auth-helpers-remix";
 import type { User } from "@supabase/supabase-js";
 import { format } from "date-fns";
 import { getMonthlyOrders, getOrdersByDateRange } from "~/api/order";
@@ -29,29 +30,41 @@ import { groupBy } from "~/utils";
 export let loader: LoaderFunction = async ({ request }) => {
   const redirectTo = new URL(request.url).pathname;
 
-  let session = await getSession(request.headers.get("Cookie"));
+  const response = new Response();
 
-  if (!session.has("access_token")) {
+  const supabaseClient = createServerClient(
+    process.env.SUPABASE_PROJ_URL!,
+    process.env.SUPABASE_PUBLIC_KEY!,
+    { request, response }
+  );
+
+  //  let session = await getSession(request.headers.get("Cookie"));
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  console.log(data);
+  if (!data.session?.user) {
     let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
     throw redirect(`/login?${searchParams}`);
   } else {
     // otherwise execute the query for the page, but first get token
-    const { user, error: sessionErr } = await supabase.auth.api.getUser(
-      session.get("access_token")
-    );
+    // const {
+    //  data: { user },
+    //  error,
+    // } = await supabase.auth.getUser();
 
-    if (!user) {
-      let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
-      throw redirect(`/login?${searchParams}`, {
-        headers: { "Set-Cookie": await destroySession(session) },
-      });
-    }
+    // if (!data.session?.user) {
+    //   let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
+    //   throw redirect(`/login?${searchParams}`, {
+    //     headers: { "Set-Cookie": await destroySession(data.session) },
+    //   });
+    // }
 
     // if no error then get then set authenticated session
     // to match the user associated with the access_token
-    if (!sessionErr) {
+    if (!error) {
       // activate the session with the auth_token
-      supabase.auth.setAuth(session.get("access_token"));
+
+      //      supabase.auth.setAuth(session.get("access_token"));
       const currentDate = format(new Date(), "yyyy-MM-dd");
       const currentMonth = format(new Date(), "MM");
       const currentYear = format(new Date(), "yyyy");
@@ -92,9 +105,15 @@ export let loader: LoaderFunction = async ({ request }) => {
       )) as ProductType[];
 
       // return data and any potential errors along with user
-      return { user, orders, products, ordersByMonth, ordersByProduct };
+      return {
+        user: data.session.user,
+        orders,
+        products,
+        ordersByMonth,
+        ordersByProduct,
+      };
     } else {
-      return { error: sessionErr };
+      return { error };
     }
   }
 };

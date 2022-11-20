@@ -1,8 +1,8 @@
 import { json, redirect } from "@remix-run/node";
+import { createServerClient } from "@supabase/auth-helpers-remix";
 import { createProduct } from "~/api/product";
 import type { ItemActionData } from "~/routes/items/new";
 import { destroySession, getSession } from "~/services/session.server";
-import { supabase } from "~/services/supabase";
 import type { AuthType } from "~/types";
 
 export function validatefieldContent(content: string) {
@@ -49,40 +49,28 @@ export async function isLoggedIn({
   request: Request;
 }): Promise<AuthType> {
   const redirectTo = new URL(request.url).pathname;
+  const response = new Response();
 
-  // console.log(request.headers.get("Cookie"));
+  const supabaseClient = createServerClient(
+    process.env.SUPABASE_PROJ_URL!,
+    process.env.SUPABASE_PUBLIC_KEY!,
+    { request, response }
+  );
 
-  let session = await getSession(request.headers.get("Cookie"));
-  // console.log(session.has("access_token"));
+  //  let session = await getSession(request.headers.get("Cookie"));
+  const { data, error } = await supabaseClient.auth.getSession();
 
-  // if there is no access token in the header then
-  // the user is not authenticated, go to login
-  if (!session.has("access_token")) {
+  if (!data.session?.user) {
     let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
     throw redirect(`/login?${searchParams}`);
   } else {
-    // otherwise execute the query for the page, but first get token
-    const { user, error: sessionErr } = await supabase.auth.api.getUser(
-      session.get("access_token")
-    );
-
-    if (!user) {
-      let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
-      throw redirect(`/login?${searchParams}`, {
-        headers: { "Set-Cookie": await destroySession(session) },
-      });
-    }
-
-    // if no error then get then set authenticated session
-    // to match the user associated with the access_token
-    if (!sessionErr) {
-      // activate the session with the auth_token
-      supabase.auth.setAuth(session.get("access_token"));
-
+    if (!error) {
       // return data and any potential errors along with user
-      return { user };
+      return {
+        user: data.session.user,
+      };
     } else {
-      return { error: sessionErr };
+      return { error };
     }
   }
 }

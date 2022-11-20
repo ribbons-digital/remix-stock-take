@@ -1,47 +1,45 @@
-import { Link, Form, useActionData, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { Link, Form, useActionData } from "@remix-run/react";
+import type { ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
-import { supabase } from "~/services/supabase";
-import { commitSession, getSession } from "~/services/session.server";
 import { Button, TextField } from "@mui/material";
 import ResponsiveAppBar from "~/components/AppBar";
-import type { AuthType } from "~/types";
-import { isLoggedIn } from "~/utils";
+import { createServerClient } from "@supabase/auth-helpers-remix";
 
 export let action: ActionFunction = async ({ request }) => {
   // get user credentials from form
-  let form = await request.formData();
-  let email = form.get("email") as string;
-  let password = form.get("password") as string;
+
+  const { email, password } = Object.fromEntries(await request.formData());
+  const response = new Response();
+
+  const supabaseClient = createServerClient(
+    process.env.SUPABASE_PROJ_URL!,
+    process.env.SUPABASE_PUBLIC_KEY!,
+    { request, response }
+  );
 
   // login using the credentials
-  const {
-    user,
-    error,
-    session: supaSession,
-  } = await supabase.auth.signIn({
-    email,
-    password,
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: String(email),
+    password: String(password),
   });
 
+  console.log({ data });
   // if i have a user then create the cookie with the
   // auth_token, not sure if i want to use the auth token,
   // but it works... will do more research
-  if (user) {
+  if (!error) {
     // get session and set access_token
-    let session = await getSession(request.headers.get("Cookie"));
-    session.set("access_token", supaSession?.access_token);
+    // let session = await getSession(request.headers.get("Cookie"));
+    // session.set("access_token", data.session?.access_token);
 
     // redirect to page with the cookie set in header
     return redirect("/", {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
+      headers: response.headers,
     });
   }
 
   // else return the error
-  return { user, error };
+  return json({ data, error }, { headers: response.headers });
 };
 
 // https://remix.run/guides/routing#index-routes
