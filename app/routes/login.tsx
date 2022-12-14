@@ -1,9 +1,9 @@
 import { Link, Form, useActionData } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
-import { Button, TextField } from "@mui/material";
 import ResponsiveAppBar from "~/components/AppBar";
 import { createServerClient } from "@supabase/auth-helpers-remix";
+import { TextInput, Button } from "@mantine/core";
 
 export let action: ActionFunction = async ({ request }) => {
   // get user credentials from form
@@ -55,14 +55,14 @@ export default function Login() {
         </h2>
         <Form method="post">
           <div className="flex flex-1 items-center flex-col">
-            <TextField
+            <TextInput
               id="email"
               label="Email"
               name="email"
               type="text"
               sx={{ py: 1, width: "50%" }}
             />
-            <TextField
+            <TextInput
               id="password"
               label="Password"
               name="password"
@@ -71,16 +71,16 @@ export default function Login() {
             />
             <div className="flex flex-col items-center w-1/2">
               <Button
-                variant="contained"
+                variant="outline"
                 name="login"
                 type="submit"
-                className="w-full"
+                className="w-full mt-4"
               >
                 Log in
               </Button>
               <div className="text-blue-600 mt-4">Don't have an account?</div>
               <Link to="/signup">
-                <Button name="signup" type="button" className="text-blue-600">
+                <Button name="signup" type="button" variant="subtle">
                   Sign up
                 </Button>
               </Link>

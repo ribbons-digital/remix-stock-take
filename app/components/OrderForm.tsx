@@ -1,18 +1,15 @@
-import type { SelectChangeEvent } from "@mui/material";
 import {
+  Table,
+  Button,
   Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
+  TextInput,
+  Menu,
   Select,
-  TextField,
-} from "@mui/material";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-import type { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-import { DataGrid } from "@mui/x-data-grid";
+  Box,
+  Modal,
+  Text,
+  Textarea,
+} from "@mantine/core";
 import {
   Form,
   useActionData,
@@ -29,32 +26,32 @@ const modalButtonStyle = {
   justifyContent: "end",
 };
 
-const columns: GridColDef[] = [
-  // {
-  //   field: "id",
-  //   headerName: "ID",
-  //   width: 400,
-  //   valueGetter: (params: GridValueGetterParams) => params.row.orderedItem._id,
-  // },
-  {
-    field: "orderedItem",
-    headerName: "Product Name",
-    flex: 40,
-    valueGetter: (params: GridValueGetterParams) => params.row.orderedItem.name,
-  },
-  {
-    field: "quantity",
-    headerName: "Quantity",
-    flex: 10,
-    valueGetter: (params: GridValueGetterParams) => params.row.quantity,
-  },
-  {
-    field: "note",
-    headerName: "Note",
-    flex: 50,
-    valueGetter: (params: GridValueGetterParams) => params.row.note,
-  },
-];
+// const columns: GridColDef[] = [
+//   // {
+//   //   field: "id",
+//   //   headerName: "ID",
+//   //   width: 400,
+//   //   valueGetter: (params: GridValueGetterParams) => params.row.orderedItem._id,
+//   // },
+//   {
+//     field: "orderedItem",
+//     headerName: "Product Name",
+//     flex: 40,
+//     valueGetter: (params: GridValueGetterParams) => params.row.orderedItem.name,
+//   },
+//   {
+//     field: "quantity",
+//     headerName: "Quantity",
+//     flex: 10,
+//     valueGetter: (params: GridValueGetterParams) => params.row.quantity,
+//   },
+//   {
+//     field: "note",
+//     headerName: "Note",
+//     flex: 50,
+//     valueGetter: (params: GridValueGetterParams) => params.row.note,
+//   },
+// ];
 
 type OrderFormProps = {
   products: ProductType[];
@@ -94,9 +91,6 @@ export default function OrderForm({ products, order }: OrderFormProps) {
     clearModalFields();
     setIsEditOrderItem(false);
     setOpen(false);
-  };
-  const handleSelectProduct = (event: SelectChangeEvent) => {
-    setSelectedProductId(event.target.value);
   };
 
   const handleAddOrderItem = () => {
@@ -173,13 +167,10 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           </Button>
           <div>
             {transition.state === "idle" && (
-              <Button variant="contained" type="submit">
-                {order ? "Update" : "Add"}
-              </Button>
+              <Button type="submit">{order ? "Update" : "Add"}</Button>
             )}
             {transition.state === "submitting" && (
               <Button
-                variant="contained"
                 type="submit"
                 disabled={transition.state === "submitting"}
               >
@@ -189,7 +180,6 @@ export default function OrderForm({ products, order }: OrderFormProps) {
             {order && (
               <Button
                 className="ml-2"
-                variant="contained"
                 color="error"
                 type="submit"
                 name="delete"
@@ -199,7 +189,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
             )}
           </div>
         </div>
-        <TextField
+        <TextInput
           id="order-number"
           label="Order Number"
           name="orderNumber"
@@ -222,42 +212,34 @@ export default function OrderForm({ products, order }: OrderFormProps) {
         ) : null}
 
         <Modal
-          open={open}
+          opened={open}
           onClose={handleClose}
           aria-labelledby="Add-order-item-modal"
           aria-describedby="A-modal-that-allows-you-to-add-order-items"
         >
           <Box sx={modalStyle({ width: "auto" })}>
-            <Typography id="Add-order-item-modal" variant="h6" component="h2">
-              Order Item
-            </Typography>
-            <Typography
+            <Text id="Add-order-item-modal">Order Item</Text>
+            <Text
               id="A-modal-that-allows-you-to-add-order-items"
               sx={{ my: 2 }}
             >
               Select a product from the list and set the quantity you want to
               add to this order
-            </Typography>
-            <FormControl sx={{ py: 1, width: "100%" }}>
-              <InputLabel id="demo-simple-select-helper-label">
-                Product
-              </InputLabel>
+            </Text>
+            <form className="py-1 w-full">
               <Select
-                labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 value={selectedProductId}
                 label="Product"
-                onChange={handleSelectProduct}
+                onChange={(value) => setSelectedProductId(value ?? "")}
                 disabled={isEditOrderItem}
-              >
-                {products.map((product, i) => (
-                  <MenuItem value={product._id} key={product._id}>
-                    <em>{product.name}</em>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
+                data={products.map((product) => ({
+                  value: product._id!,
+                  label: product.name,
+                }))}
+              ></Select>
+            </form>
+            <TextInput
               id="outlined-number"
               label="Quantity"
               type="number"
@@ -267,11 +249,10 @@ export default function OrderForm({ products, order }: OrderFormProps) {
               }
               sx={{ py: 1, width: "100%" }}
             />
-            <TextField
+            <Textarea
               id="note"
               label="Note"
-              type="text"
-              multiline
+              autosize
               rows={4}
               placeholder="(Optional)"
               value={note}
@@ -279,11 +260,10 @@ export default function OrderForm({ products, order }: OrderFormProps) {
               sx={{ py: 1, width: "100%" }}
             />
             <div style={modalButtonStyle}>
-              <Button sx={{ mr: 2 }} variant="outlined" onClick={handleClose}>
+              <Button sx={{ mr: 2 }} onClick={handleClose}>
                 Cancel
               </Button>
               <Button
-                variant="contained"
                 onClick={handleAddOrderItem}
                 disabled={
                   !selectedProductId ||
@@ -301,7 +281,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           <div className="flex w-full items-center justify-between">
             <div className="text-xl font-bold">Item List:</div>
 
-            <Button className="my-6" variant="contained" onClick={handleOpen}>
+            <Button className="my-6" onClick={handleOpen}>
               + Add Item
             </Button>
 
@@ -337,27 +317,30 @@ export default function OrderForm({ products, order }: OrderFormProps) {
               {actionData.formError}
             </p>
           ) : null}
-          <DataGrid
-            rows={orderItems}
-            columns={columns}
-            pageSize={15}
-            rowsPerPageOptions={[15]}
-            getRowId={(row) => row.orderedItem._id}
-
-            // checkboxSelection
-            // onSelectionModelChange={(
-            //   selectionModel: GridSelectionModel,
-            //   details: GridCallbackDetails
-            // ) => {
-            //   setSelectedProductIds(selectionModel as string[]);
-            // }}
-          />
+          <Table>
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderItems.map((item, i) => (
+                <tr key={i}>
+                  <td>{item.orderedItem.name}</td>
+                  <td>{item.quantity}</td>
+                  <td>{item.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </div>
 
         <label htmlFor="orderDate" className="text-xl font-bold mt-8">
           Order Date:
         </label>
-        <TextField
+        <TextInput
           type="date"
           id="orderDate"
           name="orderDate"

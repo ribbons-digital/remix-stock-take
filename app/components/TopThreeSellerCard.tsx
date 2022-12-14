@@ -1,61 +1,29 @@
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Card, Button, Text, Title } from "@mantine/core";
 
 export default function TopThreeSellerCard() {
   return (
-    <Card sx={{ minWidth: 300 }}>
-      <CardHeader
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Top 3 Sellers
-          </Typography>
-        }
-      />
-      <CardContent>
-        <div className="flex items-center w-full justify-between">
-          <Typography variant="caption" component="div">
-            Omnia Oven
-          </Typography>
+    <Card
+      sx={{ minWidth: 300, minHeight: 200 }}
+      className="flex flex-col justify-between"
+    >
+      <Card.Section className="flex justify-between p-2">
+        <Title>Top 3 Sellers</Title>
+      </Card.Section>
+      <div className="flex items-center w-full justify-between">
+        <Text>Omnia Oven</Text>
 
-          <Typography variant="caption" component="div">
-            20
-          </Typography>
-        </div>
-        <div className="flex items-center w-full justify-between">
-          <Typography variant="caption" component="div">
-            MoonShade
-          </Typography>
+        <Text>20</Text>
+      </div>
+      <div className="flex items-center w-full justify-between">
+        <Text>MoonShade</Text>
 
-          <Typography variant="caption" component="div">
-            15
-          </Typography>
-        </div>
-        <div className="flex items-center w-full justify-between">
-          <Typography variant="caption" component="div">
-            Haven XL - Forest Camo
-          </Typography>
+        <Text>15</Text>
+      </div>
+      <div className="flex items-center w-full justify-between">
+        <Text>Haven XL - Forest Camo</Text>
 
-          <Typography variant="caption" component="div">
-            12
-          </Typography>
-        </div>
-        <Typography sx={{ mb: 2 }} color="text.secondary">
-          This month
-        </Typography>
-      </CardContent>
-      <CardActions></CardActions>
+        <Text>12</Text>
+      </div>
     </Card>
   );
 }

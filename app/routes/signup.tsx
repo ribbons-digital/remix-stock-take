@@ -1,10 +1,10 @@
-import { Button, TextField } from "@mui/material";
 import { ActionFunction, json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Link, Form, useActionData } from "@remix-run/react";
 import { createServerClient } from "@supabase/auth-helpers-remix";
 import ResponsiveAppBar from "~/components/AppBar";
 import { supabase } from "~/services/supabase";
+import { Button, TextInput } from "@mantine/core";
 
 export let action: ActionFunction = async ({ request }) => {
   let form = await request.formData();
@@ -57,14 +57,14 @@ export default function Signup(): JSX.Element {
         </h2>
         <Form method="post">
           <div className="flex flex-1 items-center flex-col">
-            <TextField
+            <TextInput
               id="email"
               label="Email"
               name="email"
               type="text"
               sx={{ py: 1, width: "50%" }}
             />
-            <TextField
+            <TextInput
               id="password"
               label="Password"
               name="password"
@@ -72,12 +72,7 @@ export default function Signup(): JSX.Element {
               sx={{ py: 1, width: "50%" }}
             />
             <div className="flex flex-col items-center w-1/2">
-              <Button
-                variant="contained"
-                name="signup"
-                type="submit"
-                className="w-full"
-              >
+              <Button name="signup" type="submit" className="w-full">
                 Sign up
               </Button>
               <div className="text-blue-600 mt-4">Already have an account?</div>

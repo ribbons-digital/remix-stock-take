@@ -1,13 +1,4 @@
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Container, Grid, Card, Text } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -17,6 +8,7 @@ import { format } from "date-fns";
 import { getMonthlyOrders, getOrdersByDateRange } from "~/api/order";
 import { getOrdersInProductByDateRange } from "~/api/product";
 import ResponsiveAppBar from "~/components/AppBar";
+import AppLayout from "~/components/AppLayout";
 import MonthlyOrderLineChart from "~/components/MonthlyOrderLineChart";
 import OrdersByProductCard from "~/components/OrdersByProductCard";
 import TopThreeSellerCard from "~/components/TopThreeSellerCard";
@@ -163,69 +155,34 @@ export default function Index() {
     useLoaderData<LoaderData>();
 
   return (
-    <div>
-      <ResponsiveAppBar user={user} />
-      <Container>
-        <Grid container spacing={2}>
-          <Grid item md={4} xs={12}>
-            <TotalOrdersCard orders={orders} />
-          </Grid>
-          <Grid item md={4} xs={12}>
-            <TopThreeSellerCard />
-          </Grid>
-          <Grid item md={4} xs={12}>
-            <TotalInventoryValueCard />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} className="mt-8">
-          <Grid item md={6} xs={12}>
-            <Card>
-              <CardHeader
-                action={
-                  <IconButton aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                title={
-                  <Typography
-                    sx={{ fontSize: 14 }}
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    Monthly Orders
-                  </Typography>
-                }
-              />
-              <CardContent>
-                <MonthlyOrderLineChart ordersByMonth={ordersByMonth} />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item md={6} xs={12}>
-            <Card>
-              <CardHeader
-                action={
-                  <IconButton aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                title={
-                  <Typography
-                    sx={{ fontSize: 14 }}
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    Orders by Product
-                  </Typography>
-                }
-              />
-              <CardContent>
-                <OrdersByProductCard products={ordersByProduct} />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Container>
-    </div>
+    <AppLayout>
+      <Grid>
+        <Grid.Col lg={4} md={12}>
+          <TotalOrdersCard orders={orders} />
+        </Grid.Col>
+        <Grid.Col lg={4} md={12}>
+          <TopThreeSellerCard />
+        </Grid.Col>
+        <Grid.Col lg={4} md={12}>
+          <TotalInventoryValueCard />
+        </Grid.Col>
+      </Grid>
+      <Grid>
+        <Grid.Col span={6}>
+          <Card>
+            <Text>Monly Orders</Text>
+            <Card.Section>
+              <MonthlyOrderLineChart ordersByMonth={ordersByMonth} />
+            </Card.Section>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Card>
+            <Text>Orders by Product</Text>
+            <OrdersByProductCard products={ordersByProduct} />
+          </Card>
+        </Grid.Col>
+      </Grid>
+    </AppLayout>
   );
 }

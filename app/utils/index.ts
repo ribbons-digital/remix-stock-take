@@ -25,8 +25,8 @@ export const modalStyle = ({ width }: { width: number | string }) => ({
   width,
   bgcolor: "background.paper",
   border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
+  boxShadow: "24",
+  p: "4",
   height: "auto",
   overflow: "scroll",
 });

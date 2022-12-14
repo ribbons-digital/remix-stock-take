@@ -1,16 +1,5 @@
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
-import { useFetcher } from "@remix-run/react";
+import { Button, Card, Center, Menu, Text, Title } from "@mantine/core";
+import { NavLink, useFetcher } from "@remix-run/react";
 import { format, subMonths } from "date-fns";
 import React from "react";
 import type { OrderType } from "~/types";
@@ -43,47 +32,49 @@ export default function TotalOrdersCard({ orders }: { orders: OrderType[] }) {
   };
 
   return (
-    <Card sx={{ minWidth: 300 }}>
-      <CardHeader
-        action={
-          <>
-            <IconButton aria-label="settings" onClick={handleClick}>
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
+    <Card
+      sx={{ minWidth: 300, minHeight: 200 }}
+      className="flex flex-col justify-between"
+    >
+      <Card.Section className="flex justify-between p-2">
+        <Title>Total Orders</Title>
+        <Menu>
+          <Menu.Target>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
             >
-              <MenuItem onClick={fetchLastMonth}>Last month</MenuItem>
-              <MenuItem onClick={fetchLastThreeMonth}>
-                last three months
-              </MenuItem>
-            </Menu>
-          </>
-        }
-        title={
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Total Orders
-          </Typography>
-        }
-      />
-      <CardContent>
-        <Typography variant="h5" component="div">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+              />
+            </svg>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item onClick={fetchLastMonth}>Last month</Menu.Item>
+            <Menu.Item onClick={fetchLastThreeMonth}>
+              Last three months
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Card.Section>
+      <Card.Section className="flex flex-col items-center">
+        <Text className="text-3xl font-extrabold">
           {fetcher.data ? fetcher.data.orders.length : orders.length}
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          This month
-        </Typography>
-      </CardContent>
+        </Text>
+        <Text>this month</Text>
+      </Card.Section>
 
-      <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
+      <Card.Section className="flex justify-end p-2">
+        <NavLink to="#" className="underline">
+          Learn More
+        </NavLink>
+      </Card.Section>
     </Card>
   );
 }

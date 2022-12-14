@@ -1,17 +1,17 @@
-import { Button, TextField } from "@mui/material";
+import { Button, TextInput } from "@mantine/core";
 
 export default function LoginForm() {
   return (
     <form method="post">
       <div className="flex flex-1 items-center flex-col">
-        <TextField
+        <TextInput
           id="email"
           label="Email"
           name="email"
           type="text"
           sx={{ py: 1, width: "50%" }}
         />
-        <TextField
+        <TextInput
           id="password"
           label="Password"
           name="password"
@@ -20,7 +20,7 @@ export default function LoginForm() {
         />
         <div className="flex flex-col items-center w-1/2">
           <Button
-            variant="contained"
+            variant="outline"
             name="login"
             type="submit"
             className="w-full"

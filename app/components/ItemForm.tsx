@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Modal,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Modal, TextInput, Checkbox } from "@mantine/core";
 import {
   Form,
   useActionData,
@@ -63,7 +55,6 @@ export default function ItemForm({
         </Button>
         {!isCreatingItem && (
           <Button
-            variant="contained"
             type="submit"
             name="action"
             value={item ? "update-item" : "create-item"}
@@ -72,12 +63,12 @@ export default function ItemForm({
           </Button>
         )}
         {isCreatingItem && (
-          <Button variant="contained" type="submit" disabled={isCreatingItem}>
+          <Button type="submit" disabled={isCreatingItem}>
             {item ? "Updating..." : "Creating..."}
           </Button>
         )}
       </div>
-      <TextField
+      <TextInput
         id="itemName"
         name="itemName"
         label="Item Name"
@@ -94,7 +85,7 @@ export default function ItemForm({
           {actionData.fieldErrors.name}
         </p>
       ) : null}
-      <TextField
+      <TextInput
         id="quantity"
         name="quantity"
         label="Quantity"
@@ -119,36 +110,18 @@ export default function ItemForm({
           <label htmlFor="select-existing-products" className="my-2">
             Select existing products:
           </label>
-          <FormGroup
-            sx={{
-              height: "12rem",
-              overflow: "scroll",
-              border: "1px",
-              // p: 2,
-              // borderColor: "gray",
-            }}
-          >
-            {products.map((product) => {
-              return (
-                <FormControlLabel
-                  key={product._id}
-                  control={
-                    <Checkbox
-                      name="product"
-                      value={product._id}
-                      defaultChecked={
-                        item
-                          ? Boolean(inProducts?.includes(product._id))
-                          : false
-                      }
-                      // checked={Boolean(inProducts?.includes(product._id))}
-                    />
-                  }
-                  label={product.name}
-                />
-              );
-            })}
-          </FormGroup>
+          {products.map((product) => {
+            return (
+              <Checkbox
+                name="product"
+                value={product._id}
+                defaultChecked={
+                  item ? Boolean(inProducts?.includes(product._id)) : false
+                }
+                // checked={Boolean(inProducts?.includes(product._id))}
+              />
+            );
+          })}
 
           {actionData?.fieldErrors?.inProducts ? (
             <p className="text-red-600" role="alert" id="order-date-error">
@@ -156,7 +129,7 @@ export default function ItemForm({
             </p>
           ) : null}
           <Modal
-            open={open}
+            opened={open}
             onClose={handleClose}
             aria-labelledby="Add-order-item-modal"
             aria-describedby="A-modal-that-allows-you-to-add-order-items"
@@ -165,7 +138,7 @@ export default function ItemForm({
               <form>
                 <div>
                   <div>
-                    <TextField
+                    <TextInput
                       id="add-new-product"
                       name="add-new-product"
                       label="Add a new product"
@@ -190,7 +163,6 @@ export default function ItemForm({
                   </div>
                   <Button
                     type="submit"
-                    variant="contained"
                     name="action"
                     value="add-product"
                     disabled={isAddingProduct}
@@ -202,12 +174,12 @@ export default function ItemForm({
               </form>
             </Box>
           </Modal>
-          <Button type="button" variant="text" onClick={() => setOpen(true)}>
+          <Button type="button" onClick={() => setOpen(true)}>
             Add New
           </Button>
         </>
       </div>
-      <TextField
+      <TextInput
         id="cost"
         name="cost"
         label="Cost Per Item"

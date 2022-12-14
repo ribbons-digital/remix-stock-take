@@ -1,7 +1,5 @@
 import React from "react";
-import { Button } from "@mui/material";
-import type { GridColDef } from "@mui/x-data-grid";
-import { DataGrid } from "@mui/x-data-grid";
+import { Button, Table } from "@mantine/core";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData, useTransition } from "@remix-run/react";
@@ -29,68 +27,68 @@ export const action: ActionFunction = async ({ request, params }) => {
   return redirect("/items");
 };
 
-const columns: GridColDef[] = [
-  {
-    field: "itemName",
-    headerName: "Item Name",
-    flex: 60,
-    // valueGetter: (params: GridValueGetterParams) => params.row.name,
-    renderCell: (cellValues) => {
-      return (
-        <Link to={`/items/${cellValues.id as string}`}>
-          <div className="underline underline-offset-1 text-blue-700">
-            {cellValues.row.name}
-          </div>
-        </Link>
-      );
-    },
-  },
-  {
-    field: "quantity",
-    headerName: "Quantity",
-    flex: 10,
-    // editable: true,
-    // valueGetter: (params: GridValueGetterParams) => params.row.quantity,
-    renderCell: (cellValues) => {
-      return (
-        <>
-          <label htmlFor={`quantity-${cellValues.id}`} />
-          <input
-            className="border-1 w-full"
-            id={`quantity-${cellValues.id}`}
-            name={`quantity-${cellValues.id}`}
-            defaultValue={cellValues.row.quantity}
-            type="number"
-          />
-        </>
-      );
-    },
-  },
-  {
-    field: "action",
-    headerName: "Action",
-    flex: 10,
-    renderCell: (cellValues) => {
-      return (
-        <button
-          className="rounded-full bg-blue-500 pl-3 pr-3 text-white text-center"
-          type="submit"
-          name="update"
-          value={JSON.stringify({
-            id: cellValues.id,
-            name: cellValues.row.name,
-            quantity: cellValues.row.quantity,
-            cost: cellValues.row.cost,
-            inProduct: cellValues.row.inProduct,
-          })}
-        >
-          Update
-        </button>
-      );
-    },
-  },
-];
-
+// const columns: GridColDef[] = [
+//   {
+//     field: "itemName",
+//     headerName: "Item Name",
+//     flex: 60,
+//     // valueGetter: (params: GridValueGetterParams) => params.row.name,
+//     renderCell: (cellValues) => {
+//       return (
+//         <Link to={`/items/${cellValues.id as string}`}>
+//           <div className="underline underline-offset-1 text-blue-700">
+//             {cellValues.row.name}
+//           </div>
+//         </Link>
+//       );
+//     },
+//   },
+//   {
+//     field: "quantity",
+//     headerName: "Quantity",
+//     flex: 10,
+//     // editable: true,
+//     // valueGetter: (params: GridValueGetterParams) => params.row.quantity,
+//     renderCell: (cellValues) => {
+//       return (
+//         <>
+//           <label htmlFor={`quantity-${cellValues.id}`} />
+//           <input
+//             className="border-1 w-full"
+//             id={`quantity-${cellValues.id}`}
+//             name={`quantity-${cellValues.id}`}
+//             defaultValue={cellValues.row.quantity}
+//             type="number"
+//           />
+//         </>
+//       );
+//     },
+//   },
+//   {
+//     field: "action",
+//     headerName: "Action",
+//     flex: 10,
+//     renderCell: (cellValues) => {
+//       return (
+//         <button
+//           className="rounded-full bg-blue-500 pl-3 pr-3 text-white text-center"
+//           type="submit"
+//           name="update"
+//           value={JSON.stringify({
+//             id: cellValues.id,
+//             name: cellValues.row.name,
+//             quantity: cellValues.row.quantity,
+//             cost: cellValues.row.cost,
+//             inProduct: cellValues.row.inProduct,
+//           })}
+//         >
+//           Update
+//         </button>
+//       );
+//     },
+//   },
+// ];
+//
 export default function ItemsRoute() {
   const items = useLoaderData<ItemType[]>();
   const transition = useTransition();
@@ -110,24 +108,46 @@ export default function ItemsRoute() {
       <div className="w-full flex justify-between mb-6">
         <h1>Inventory value: {dollarAUD.format(inventoryValue)}</h1>
         <Link to="/items/new">
-          <Button type="button" variant="contained">
-            + Add New Item
-          </Button>
+          <Button type="button">+ Add New Item</Button>
         </Link>
       </div>
       <Form method="post">
         <div style={{ height: 800, width: "100%" }}>
-          <DataGrid
-            rows={items}
-            columns={columns}
-            pageSize={15}
-            rowsPerPageOptions={[15]}
-            getRowId={(row) => row._id}
-            loading={
-              transition.state === "loading" ||
-              transition.state === "submitting"
-            }
-          />
+          <Table>
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, i) => {
+                return (
+                  <tr key={i}>
+                    <td>{item.name}</td>
+                    <td>{item.quantity}</td>
+                    <td>
+                      <button
+                        className="rounded-full bg-blue-500 pl-3 pr-3 text-white text-center"
+                        type="submit"
+                        name="update"
+                        value={JSON.stringify({
+                          id: item._id,
+                          name: item.name,
+                          quantity: item.quantity,
+                          cost: item.cost,
+                          inProduct: item.inProduct,
+                        })}
+                      >
+                        Update
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         </div>
       </Form>
     </div>

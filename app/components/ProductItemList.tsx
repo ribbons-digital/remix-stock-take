@@ -1,138 +1,105 @@
-import type { SelectChangeEvent } from "@mui/material";
-import {
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@mui/material";
-import type { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-import { DataGrid } from "@mui/x-data-grid";
-import { useTransition } from "@remix-run/react";
+import { Table, Button, Select } from "@mantine/core";
+import { Fetcher, useFetcher, useTransition } from "@remix-run/react";
 import React from "react";
-import { deleteItemInProduct } from "~/api/product";
 import type { ItemType } from "~/types";
 
 type ProductItemListProps = {
   currentProductItems: ItemType[];
   allProductItems: ItemType[];
   productId: string;
+  fetcher: Fetcher;
 };
 
 export default function ProductItemList({
   currentProductItems,
   allProductItems,
   productId,
+  fetcher,
 }: ProductItemListProps) {
-  const [items, setItems] = React.useState<ItemType[]>(currentProductItems);
   const [selectedItemId, setSelectedItemId] = React.useState<string>("");
 
+  const isAdding =
+    fetcher.submission?.formData.get("addItem") === selectedItemId;
+
   React.useEffect(() => {
-    setItems(currentProductItems);
-  }, [currentProductItems]);
-
-  const columns: GridColDef[] = React.useMemo(() => {
-    return [
-      {
-        field: "itemName",
-        headerName: "Item Name",
-        flex: 600,
-        valueGetter: (params: GridValueGetterParams) => params.row.name,
-      },
-      {
-        field: "quantity",
-        headerName: " Quantity",
-        flex: 100,
-        valueGetter: (params: GridValueGetterParams) => params.row.quantity,
-      },
-      {
-        field: "action",
-        headerName: "Action",
-
-        flex: 120,
-        renderCell: (cellValues) => {
-          return (
-            <button
-              className="rounded-full bg-red-500 pl-3 pr-3 text-white text-center"
-              name="deleteItem"
-              type="submit"
-              value={JSON.stringify({
-                itemId: cellValues.id,
-                items,
-                productId,
-              })}
-              //   onClick={async () => {
-              //     console.log(items);
-              //     const newItemList = items.filter(
-              //       (item) => item._id !== cellValues.id
-              //     );
-              //     const index = items.findIndex(
-              //       (item) => item._id === cellValues.id
-              //     );
-              //     // await deleteItemInProduct({ id: productId, index });
-
-              //     console.log(cellValues);
-
-              //     setItems(newItemList);
-              //   }}
-            >
-              Delete
-            </button>
-          );
-        },
-      },
-    ];
-  }, [items, productId]);
-
-  const handleSelectItem = (event: SelectChangeEvent) => {
-    setSelectedItemId(event.target.value);
-  };
-
-  const transition = useTransition();
-
+    if (!isAdding) {
+      setSelectedItemId("");
+    }
+  }, [isAdding]);
   return (
     <>
-      <FormControl sx={{ py: 1, width: "100%" }}>
-        <InputLabel id="demo-simple-select-helper-label">Item</InputLabel>
-        <Select
-          labelId="selected-item"
-          id="selected-item"
-          value={selectedItemId}
-          label="Item"
-          onChange={handleSelectItem}
-        >
-          {allProductItems.map((item, i) => (
-            <MenuItem value={item._id} key={item._id}>
-              <em>{item.name}</em>
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <input type="hidden" name="items" defaultValue={JSON.stringify(items)} />
+      <Select
+        id="selected-item"
+        value={selectedItemId}
+        label="Item"
+        onChange={(value) => setSelectedItemId(value ?? "")}
+        data={allProductItems.map((item) => ({
+          label: item.name,
+          value: item._id!,
+        }))}
+      />
+      <input
+        type="hidden"
+        name="items"
+        defaultValue={JSON.stringify(currentProductItems)}
+      />
       <Button
-        className="w-full mb-4"
-        variant="outlined"
+        className="w-full mb-4 mt-2"
         name="addItem"
+        color="blue"
+        variant="outline"
         type="submit"
         value={selectedItemId}
         disabled={!selectedItemId}
         // onClick={onUpdateItemList}
       >
-        + Add Item
+        {isAdding ? "Adding..." : "+ Add Item"}
       </Button>
 
-      {items.length > 0 && (
+      {currentProductItems ? (
         <div style={{ height: 600, width: "100%" }}>
-          <DataGrid
-            rows={items}
-            columns={columns}
-            pageSize={15}
-            rowsPerPageOptions={[15]}
-            getRowId={(row) => row._id!}
-            loading={transition.state === "submitting"}
-          />
+          <Table>
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentProductItems.map((item) => {
+                return (
+                  <tr key={item._id}>
+                    <td>{item.name}</td>
+                    <td>{item.quantity}</td>
+                    <td>
+                      <button
+                        className="rounded-full bg-red-500 p-1 text-white text-center"
+                        name="deleteItem"
+                        type="submit"
+                        value={JSON.stringify({
+                          itemId: item._id,
+                          items: currentProductItems,
+                          productId,
+                        })}
+                      >
+                        {fetcher.submission?.formData.get("deleteItem") &&
+                        JSON.parse(
+                          fetcher.submission?.formData.get(
+                            "deleteItem"
+                          ) as string
+                        ).itemId === item._id
+                          ? "Deleting..."
+                          : "Delete"}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         </div>
-      )}
+      ) : null}
     </>
   );
 }
