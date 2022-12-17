@@ -1,23 +1,23 @@
 import { Table, Button, Select } from "@mantine/core";
 import { Fetcher, useFetcher, useTransition } from "@remix-run/react";
 import React from "react";
-import type { ItemType } from "~/types";
+import type { ItemType, ProductType } from "~/types";
 
 type ProductItemListProps = {
   currentProductItems: ItemType[];
   allProductItems: ItemType[];
-  productId: string;
   fetcher: Fetcher;
+  product: ProductType;
 };
 
 export default function ProductItemList({
   currentProductItems,
   allProductItems,
-  productId,
+  product,
   fetcher,
 }: ProductItemListProps) {
   const [selectedItemId, setSelectedItemId] = React.useState<string>("");
-
+  const productId = product._id;
   const isAdding =
     fetcher.submission?.formData.get("addItem") === selectedItemId;
 
@@ -50,7 +50,9 @@ export default function ProductItemList({
         variant="outline"
         type="submit"
         value={selectedItemId}
-        disabled={!selectedItemId}
+        disabled={
+          !selectedItemId || (!product.isKit && product.items?.length === 1)
+        }
         // onClick={onUpdateItemList}
       >
         {isAdding ? "Adding..." : "+ Add Item"}
@@ -73,8 +75,9 @@ export default function ProductItemList({
                     <td>{item.name}</td>
                     <td>{item.quantity}</td>
                     <td>
-                      <button
-                        className="rounded-full bg-red-500 p-1 text-white text-center"
+                      <Button
+                        color="red"
+                        radius={50}
                         name="deleteItem"
                         type="submit"
                         value={JSON.stringify({
@@ -91,7 +94,7 @@ export default function ProductItemList({
                         ).itemId === item._id
                           ? "Deleting..."
                           : "Delete"}
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 );

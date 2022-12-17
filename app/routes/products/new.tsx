@@ -12,9 +12,12 @@ export type ProductActionData = {
   formError?: string;
   fieldErrors?: {
     name: string | undefined;
+    price: string | undefined;
   };
   fields?: {
     name: string;
+    isKit: boolean;
+    price: string;
   };
 };
 
@@ -27,12 +30,14 @@ export const action: ActionFunction = async ({ request }) => {
   const name = form.get("productName") as string;
   // const quantity = form.get("quantity") as string;
 
+  const isKit = (form.get("isKit") as string) === "on" ? true : false;
+  const price = form.get("salePrice") as string;
   const fieldErrors = {
     name: validatefieldContent(name),
     // quantity: validatefieldContent(quantity),
   };
 
-  const fields = { name };
+  const fields = { name, price };
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({
       fieldErrors,
@@ -42,6 +47,8 @@ export const action: ActionFunction = async ({ request }) => {
 
   const product = await createProduct({
     name,
+    isKit,
+    price: Number(price),
   });
   return redirect(`/products/${product._id}`);
 };

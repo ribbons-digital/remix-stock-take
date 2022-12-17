@@ -4,8 +4,10 @@ export type ProductType = {
   _id?: string;
   _key?: string;
   name: string;
+  isKit: boolean;
   items: ItemType[];
   orders: OrderType[];
+  price: number;
 };
 
 export type OrderType = {
@@ -60,6 +62,8 @@ export type OrderItemParamsType = {
 
 export type CreateProductParamsType = {
   name: string;
+  isKit: boolean;
+  price: number;
   // items: SanityReferenceType[];
 };
 

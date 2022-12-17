@@ -7,7 +7,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { MantineProvider, createEmotionCache } from "@mantine/core";
+import {
+  MantineProvider,
+  createEmotionCache,
+  ButtonStylesParams,
+} from "@mantine/core";
 import { StylesPlaceholder } from "@mantine/remix";
 
 import styles from "./tailwind.css";

@@ -1,6 +1,6 @@
-import { Button, Divider, TextInput } from "@mantine/core";
+import React from "react";
+import { Button, Divider, Switch, TextInput } from "@mantine/core";
 import {
-  Form,
   useActionData,
   useFetcher,
   useNavigate,
@@ -18,16 +18,31 @@ type ProductFormProps = {
 export default function ProductForm({ product, items }: ProductFormProps) {
   const actionData = useActionData<ProductActionData>();
   const navigate = useNavigate();
+  const transition = useTransition();
   const fetcher = useFetcher();
-
   const isSubmitting =
+    (transition.state === "submitting" || transition.state === "loading") &&
     fetcher.submission?.formData.get("submit") === product?._id;
 
   return (
     <fetcher.Form method="post" className="container mx-auto max-w-4xl p-4">
       <div className="w-full flex justify-between mb-2">
-        <Button variant="subtle" type="button" onClick={() => navigate(-1)}>
+        <Button variant="outline" type="button" onClick={() => navigate(-1)}>
           Go back
+        </Button>
+        <Button
+          name="submit"
+          type="submit"
+          value={product?._id}
+          disabled={isSubmitting}
+        >
+          {product && !isSubmitting
+            ? "Update"
+            : !product && !isSubmitting
+            ? "Add"
+            : isSubmitting
+            ? "processing..."
+            : ""}
         </Button>
       </div>
       <div>
@@ -46,22 +61,6 @@ export default function ProductForm({ product, items }: ProductFormProps) {
               }
             />
           </div>
-          <Button
-            name="submit"
-            type="submit"
-            variant="default"
-            value={product?._id}
-            className="ml-2"
-            disabled={isSubmitting}
-          >
-            {product && !isSubmitting
-              ? "Update"
-              : !product && !isSubmitting
-              ? "Add"
-              : isSubmitting
-              ? "processing..."
-              : ""}
-          </Button>
         </div>
         {actionData?.fieldErrors?.name ? (
           <p className="text-red-600" role="alert" id="name-error">
@@ -69,24 +68,31 @@ export default function ProductForm({ product, items }: ProductFormProps) {
           </p>
         ) : null}
       </div>
-      {/* <TextField
-        id="quantity"
-        name="quantity"
-        label="Quantity"
+      <TextInput
+        id="salePrice"
+        name="salePrice"
+        label="Sale Price"
         type="number"
-        defaultValue={product ? product.quantity : actionData?.fields?.quantity}
-        disabled={actionData?.fields?.name.toLowerCase().includes("kit")}
-        aria-invalid={Boolean(actionData?.fieldErrors?.quantity) || undefined}
-        aria-describedby={
-          actionData?.fieldErrors?.quantity ? "quantity-error" : undefined
-        }
+        defaultValue={product ? product.price : actionData?.fields?.price}
         sx={{ py: 1, width: "100%" }}
+        aria-invalid={Boolean(actionData?.fieldErrors?.price) || undefined}
+        aria-describedby={
+          actionData?.fieldErrors?.price ? "price-error" : undefined
+        }
       />
-      {actionData?.fieldErrors?.quantity ? (
-        <p className="form-validation-error" role="alert" id="quantity-error">
-          {actionData.fieldErrors.quantity}
+      {actionData?.fieldErrors?.price ? (
+        <p className="text-red-600" role="alert" id="price-error">
+          {actionData.fieldErrors.price}
         </p>
-      ) : null} */}
+      ) : null}
+      <Switch
+        name="isKit"
+        onLabel="Yes"
+        offLabel="No"
+        className="mt-2"
+        label="This is a kit. (check if this product contains more than one item)"
+        defaultChecked={product ? product.isKit : actionData?.fields?.isKit}
+      />
 
       {product ? (
         <div className="w-full mt-6">
@@ -98,8 +104,8 @@ export default function ProductForm({ product, items }: ProductFormProps) {
           <ProductItemList
             currentProductItems={product?.items ?? []}
             allProductItems={items}
-            productId={product?._id!}
             fetcher={fetcher}
+            product={product}
           />
         </div>
       ) : null}

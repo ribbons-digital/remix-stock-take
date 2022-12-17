@@ -13,7 +13,7 @@ export const getProducts = async () => {
   // const query =
   // '*[_type == "product"]{ _id, _key, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity }, "orders": *[_type=="order" && references(^._id)]{ _id, orderNumber } }';
   const query =
-    '*[_type == "product"]{ _id, name, orders, items[]->{_id, quantity} }';
+    '*[_type == "product"]{ _id, name, orders, price, items[]->{_id, quantity} }';
   return await sanity.fetch(query);
 };
 
@@ -33,7 +33,7 @@ export const getOrdersInProductByDateRange = async (
 
 export const getProduct = async ({ id }: { id: string }) => {
   // const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity }, "orders": *[_type=="order" && references(^._id)]{ _id, orderNumber } }`;
-  const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, items[]->{_id, _key, name, quantity}, orders[]->{_id, orderNumber} }`;
+  const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, price,isKit, items[]->{_id, _key, name, quantity}, orders[]->{_id, orderNumber} }`;
   return await sanity.fetch(query);
 };
 
@@ -56,10 +56,16 @@ export const getOrdersInProduct = async ({
   return await sanity.fetch(query);
 };
 
-export const createProduct = async ({ name }: CreateProductParamsType) => {
+export const createProduct = async ({
+  name,
+  isKit = false,
+  price = 0,
+}: CreateProductParamsType) => {
   const product: SanityDocumentStub = {
     _type: "product",
     name,
+    isKit,
+    price,
   };
   return await sanity.create(product, {
     autoGenerateArrayKeys: true,
@@ -112,11 +118,17 @@ export const updateOrdersInProduct = async ({
 export const updateProduct = async ({
   id,
   name,
+  isKit = false,
+  price = 0,
 }: {
   id: string;
   name: string;
+  isKit: boolean;
+  price: number;
 }) => {
-  const product = await sanity.patch(id, { set: { name } }).commit();
+  const product = await sanity
+    .patch(id, { set: { name, isKit, price } })
+    .commit();
 
   return product;
 };

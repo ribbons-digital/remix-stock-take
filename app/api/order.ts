@@ -10,7 +10,7 @@ import { sanity } from "../utils/sanity-client";
 
 export const getOrders = async () => {
   const query =
-    '*[_type == "order"] | order(date desc) { _id, _key, orderNumber, orderedItems[]{ orderedItem->{_id, name}, quantity } , date}';
+    '*[_type == "order"] | order(date desc) { _id, _key, orderNumber, orderedItems[]{ orderedItem->{_id, name, price}, quantity } , date}';
   return await sanity.fetch(query);
 };
 
@@ -28,7 +28,7 @@ export const getOrdersByDateRange = async (
 };
 
 export const getOrder = async (id: string): Promise<OrderResponseType[]> => {
-  const query = `*[_type == "order" && _id == "${id}"]{ _id, _key, orderNumber, orderedItems[]{ _id, orderedItem->{_id, name}, quantity, note } , date}`;
+  const query = `*[_type == "order" && _id == "${id}"]{ _id, _key, orderNumber, orderedItems[]{ _id, orderedItem->{_id, name, price}, quantity, note } , date}`;
   return await sanity.fetch(query);
 };
 

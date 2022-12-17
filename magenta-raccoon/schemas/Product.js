@@ -20,6 +20,17 @@ export default {
       ],
     },
     {
+      name: "isKit",
+      type: "boolean",
+      title: "Is this a Kit",
+      initialValue: false,
+    },
+    {
+      name: "price",
+      type: "number",
+      initialValue: 0,
+    },
+    {
       name: "items",
       type: "array",
       title: "Items",

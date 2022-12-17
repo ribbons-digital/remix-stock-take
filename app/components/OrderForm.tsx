@@ -107,29 +107,6 @@ export default function OrderForm({ products, order }: OrderFormProps) {
       note,
     } as OrderItemType;
 
-    // if (
-    //   orderItems.some(
-    //     (item) => item.orderedItem._id === newOrderItem.orderedItem._id
-    //   )
-    // ) {
-    //   const existingItemIndex = orderItems.findIndex(
-    //     (item) => item.orderedItem._id === newOrderItem.orderedItem._id
-    //   );
-    //   const existingItem = orderItems[existingItemIndex];
-
-    //   setOrderItems([
-    //     ...orderItems.slice(0, existingItemIndex),
-    //     {
-    //       ...orderItems[existingItemIndex],
-    //       quantity: isEditOrderItem
-    //         ? newOrderItem.quantity
-    //         : existingItem.quantity + newOrderItem.quantity,
-    //     },
-    //     ...orderItems.slice(existingItemIndex + 1),
-    //   ]);
-    // } else {
-    //   setOrderItems([...orderItems, newOrderItem]);
-    // }
     setOrderItems([...orderItems, newOrderItem]);
 
     handleClose();
@@ -162,29 +139,31 @@ export default function OrderForm({ products, order }: OrderFormProps) {
     <Form method="post">
       <div className="flex flex-col max-w-4xl mx-auto p-4">
         <div className="w-full flex justify-between mb-2">
-          <Button type="button" onClick={() => navigate(-1)}>
+          <Button variant="outline" type="button" onClick={() => navigate(-1)}>
             Go back
           </Button>
           <div>
+            {order && (
+              <Button
+                className="mr-2"
+                color="red"
+                variant="outline"
+                type="submit"
+                name="delete"
+              >
+                Delete
+              </Button>
+            )}
             {transition.state === "idle" && (
               <Button type="submit">{order ? "Update" : "Add"}</Button>
             )}
             {transition.state === "submitting" && (
               <Button
                 type="submit"
+                variant="outline"
                 disabled={transition.state === "submitting"}
               >
                 {order ? "Updating..." : "Adding..."}
-              </Button>
-            )}
-            {order && (
-              <Button
-                className="ml-2"
-                color="error"
-                type="submit"
-                name="delete"
-              >
-                Delete
               </Button>
             )}
           </div>
@@ -214,74 +193,76 @@ export default function OrderForm({ products, order }: OrderFormProps) {
         <Modal
           opened={open}
           onClose={handleClose}
+          centered
+          withinPortal={false}
+          title="Add new item"
           aria-labelledby="Add-order-item-modal"
           aria-describedby="A-modal-that-allows-you-to-add-order-items"
         >
-          <Box sx={modalStyle({ width: "auto" })}>
-            <Text id="Add-order-item-modal">Order Item</Text>
-            <Text
-              id="A-modal-that-allows-you-to-add-order-items"
-              sx={{ my: 2 }}
+          <Text id="A-modal-that-allows-you-to-add-order-items" sx={{ mb: 3 }}>
+            Select a product from the list and set the quantity you want to add
+            to this order
+          </Text>
+          <form className="py-1 w-full">
+            <Select
+              id="demo-simple-select-helper"
+              value={selectedProductId}
+              label="Product"
+              onChange={(value) => setSelectedProductId(value ?? "")}
+              disabled={isEditOrderItem}
+              data={products.map((product) => ({
+                value: product._id!,
+                label: product.name,
+              }))}
+            ></Select>
+          </form>
+          <TextInput
+            id="outlined-number"
+            label="Quantity"
+            type="number"
+            value={selectedProductQuantity}
+            onChange={(event) =>
+              setSelectedProductQuantity(String(event.target.value))
+            }
+            sx={{ py: 1, width: "100%" }}
+          />
+          <Textarea
+            id="note"
+            label="Note"
+            autosize
+            placeholder="(Optional)"
+            value={note}
+            onChange={(event) => setNote(String(event.target.value))}
+            sx={{ py: 1, width: "100%" }}
+          />
+          <div className="flex justify-end mt-2">
+            <Button
+              className="mr-2"
+              variant="outline"
+              color="red"
+              onClick={handleClose}
             >
-              Select a product from the list and set the quantity you want to
-              add to this order
-            </Text>
-            <form className="py-1 w-full">
-              <Select
-                id="demo-simple-select-helper"
-                value={selectedProductId}
-                label="Product"
-                onChange={(value) => setSelectedProductId(value ?? "")}
-                disabled={isEditOrderItem}
-                data={products.map((product) => ({
-                  value: product._id!,
-                  label: product.name,
-                }))}
-              ></Select>
-            </form>
-            <TextInput
-              id="outlined-number"
-              label="Quantity"
-              type="number"
-              value={selectedProductQuantity}
-              onChange={(event) =>
-                setSelectedProductQuantity(String(event.target.value))
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddOrderItem}
+              variant="outline"
+              disabled={
+                !selectedProductId ||
+                !selectedProductQuantity ||
+                selectedProductQuantity === "0"
               }
-              sx={{ py: 1, width: "100%" }}
-            />
-            <Textarea
-              id="note"
-              label="Note"
-              autosize
-              rows={4}
-              placeholder="(Optional)"
-              value={note}
-              onChange={(event) => setNote(String(event.target.value))}
-              sx={{ py: 1, width: "100%" }}
-            />
-            <div style={modalButtonStyle}>
-              <Button sx={{ mr: 2 }} onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleAddOrderItem}
-                disabled={
-                  !selectedProductId ||
-                  !selectedProductQuantity ||
-                  selectedProductQuantity === "0"
-                }
-              >
-                {isEditOrderItem ? "Update" : "Add"}
-              </Button>
-            </div>
-          </Box>
+            >
+              {isEditOrderItem ? "Update" : "Add"}
+            </Button>
+          </div>
         </Modal>
 
         <div className="flex justify-between items-center w-full">
           <div className="flex w-full items-center justify-between">
             <div className="text-xl font-bold">Item List:</div>
 
-            <Button className="my-6" onClick={handleOpen}>
+            <Button className="my-6" variant="outline" onClick={handleOpen}>
               + Add Item
             </Button>
 
@@ -311,7 +292,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
         </div>
         <Divider />
 
-        <div style={{ height: 400, width: "100%" }}>
+        <div className="w-full h-auto mb-4">
           {actionData?.formError ? (
             <p className="text-red-600 mb-1" role="alert" id="item-error">
               {actionData.formError}
@@ -337,7 +318,7 @@ export default function OrderForm({ products, order }: OrderFormProps) {
           </Table>
         </div>
 
-        <label htmlFor="orderDate" className="text-xl font-bold mt-8">
+        <label htmlFor="orderDate" className="text-xl font-bold ">
           Order Date:
         </label>
         <TextInput

@@ -44,14 +44,17 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const name = form.get("productName") as string;
 
+  const isKit = (form.get("isKit") as string) === "on" ? true : false;
+  const price = form.get("salePrice") as string;
   const deleteItem = form.get("deleteItem") as string;
   const addItem = form.get("addItem") as string;
 
   const fieldErrors = {
     name: validatefieldContent(name),
+    price: validatefieldContent(price),
   };
 
-  const fields = { name };
+  const fields = { name, isKit, price };
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({
       fieldErrors,
@@ -80,9 +83,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return redirect(`/products/${params.product}`);
   } else {
     const id = form.get("submit") as string;
-    const name = form.get("productName") as string;
-
-    await updateProduct({ id, name });
+    await updateProduct({ id, name, isKit, price: Number(price) });
 
     return redirect("/products");
   }
