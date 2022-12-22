@@ -19,10 +19,10 @@ export default function Products() {
       >
         <Tabs.List>
           <Link className="no-underline" to="/products">
-            <Tabs.Tab value="products">Orders</Tabs.Tab>
+            <Tabs.Tab value="products">Products</Tabs.Tab>
           </Link>
           <Link className="no-underline" to="/products/shopify">
-            <Tabs.Tab value="shopify-products">Shopify Orders</Tabs.Tab>
+            <Tabs.Tab value="shopify-products">Shopify Products</Tabs.Tab>
           </Link>
         </Tabs.List>
         <Outlet />
