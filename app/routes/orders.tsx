@@ -1,6 +1,6 @@
+import { Tabs } from "@mantine/core";
 import type { LoaderFunction } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
-import ResponsiveAppBar from "~/components/AppBar";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import AppLayout from "~/components/AppLayout";
 import type { AuthType } from "~/types";
 import { isLoggedIn } from "~/utils";
@@ -10,10 +10,19 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Orders() {
-  const { user } = useLoaderData<AuthType>();
   return (
     <AppLayout>
-      <Outlet />
+      <Tabs defaultValue="orders">
+        <Tabs.List>
+          <Link className="no-underline" to="/orders">
+            <Tabs.Tab value="orders">Orders</Tabs.Tab>
+          </Link>
+          <Link className="no-underline" to="/orders/shopify">
+            <Tabs.Tab value="shopify-orders">Shopify Orders</Tabs.Tab>
+          </Link>
+        </Tabs.List>
+        <Outlet />
+      </Tabs>
     </AppLayout>
   );
 }
