@@ -36252,6 +36252,13 @@ export type OrdersQueryVariables = Exact<{
 
 export type OrdersQuery = { __typename?: 'QueryRoot', orders: { __typename?: 'OrderConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'OrderEdge', node: { __typename?: 'Order', id: string, closedAt?: any | null, updatedAt: any, customer?: { __typename?: 'Customer', id: string, displayName: string } | null, lineItems: { __typename?: 'LineItemConnection', edges: Array<{ __typename?: 'LineItemEdge', node: { __typename?: 'LineItem', id: string, name: string, quantity: number } }> } } }> } };
 
+export type ProductsQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type ProductsQuery = { __typename?: 'QueryRoot', products: { __typename?: 'ProductConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges: Array<{ __typename?: 'ProductEdge', cursor: string, node: { __typename?: 'Product', id: string, title: string, totalInventory: number, totalVariants: number, variants: { __typename?: 'ProductVariantConnection', edges: Array<{ __typename?: 'ProductVariantEdge', node: { __typename?: 'ProductVariant', id: string, displayName: string, inventoryQuantity?: number | null } }> } } }> } };
+
 
 export const OrdersDocument = gql`
     query Orders($first: Int, $reverse: Boolean) {
@@ -36285,6 +36292,36 @@ export const OrdersDocument = gql`
   }
 }
     `;
+export const ProductsDocument = gql`
+    query Products($first: Int) {
+  products(first: $first) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        title
+        totalInventory
+        totalVariants
+        variants(first: 5) {
+          edges {
+            node {
+              id
+              displayName
+              inventoryQuantity
+            }
+          }
+        }
+      }
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -36295,6 +36332,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     Orders(variables?: OrdersQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<OrdersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<OrdersQuery>(OrdersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Orders', 'query');
+    },
+    Products(variables?: ProductsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<ProductsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ProductsQuery>(ProductsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Products', 'query');
     }
   };
 }

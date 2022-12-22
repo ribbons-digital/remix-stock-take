@@ -1,0 +1,28 @@
+query Products($first: Int) {
+  products(first: $first) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        title
+        totalInventory
+        totalVariants
+        variants(first: 5) {
+          edges {
+            node {
+              id
+              displayName
+              inventoryQuantity
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import type { SanityDocumentStub } from "@sanity/client";
+import { sdk } from "~/services/graphql";
 import type {
   CreateProductParamsType,
   ItemsInProductResponseType,
@@ -15,6 +16,10 @@ export const getProducts = async () => {
   const query =
     '*[_type == "product"]{ _id, name, orders, price, items[]->{_id, quantity} }';
   return await sanity.fetch(query);
+};
+
+export const getShopifyProducts = async () => {
+  return await sdk.Products({ first: 10 });
 };
 
 export const getOrdersInProductByDateRange = async (

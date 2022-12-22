@@ -1,20 +1,11 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-  useTransition,
-} from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { getProducts, updateProductItemsQuantity } from "~/api/product";
 import type { ProductType } from "~/types";
 
 import { Button, Table, TextInput } from "@mantine/core";
-
-import React from "react";
 
 export const loader: LoaderFunction = async () => {
   const products = await getProducts();

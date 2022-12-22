@@ -9,6 +9,7 @@ import type {
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "../graphql/generated/graphql";
 import { sanity } from "../utils/sanity-client";
+import { sdk } from "~/services/graphql";
 
 export const getOrders = async () => {
   const query =
@@ -16,18 +17,7 @@ export const getOrders = async () => {
   return await sanity.fetch(query);
 };
 
-const client = new GraphQLClient(
-  "https://nomad-nature.myshopify.com/admin/api/2022-10/graphql.json",
-  {
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": process.env.SHOPIFY_ADMIN_TOKEN!,
-    },
-  }
-);
-
 export const getShopifyOrders = async () => {
-  const sdk = getSdk(client);
   return await sdk.Orders({ first: 10, reverse: true });
 };
 
