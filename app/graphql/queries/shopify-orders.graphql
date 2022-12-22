@@ -1,0 +1,30 @@
+query Orders($first: Int, $reverse: Boolean) {
+  orders(first: $first, reverse: $reverse) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    edges {
+      node {
+        id
+        closedAt
+        updatedAt
+        customer {
+          id
+          displayName
+        }
+        lineItems(first: 5) {
+          edges {
+            node {
+              id
+              name
+              quantity
+            }
+          }
+        }
+      }
+    }
+  }
+}

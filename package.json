@@ -11,7 +11,8 @@
     "dev": "run-p dev:*",
     "dev:css": "npm run generate:css -- --watch",
     "dev:remix": "remix dev",
-    "generate:css": "npx tailwindcss -i ./styles/tailwind.css -o ./app/tailwind.css"
+    "generate:css": "npx tailwindcss -i ./styles/tailwind.css -o ./app/tailwind.css",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -45,6 +46,7 @@
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.1",
     "embla-carousel-react": "^7.0.5",
+    "graphql": "^16.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "recharts": "^2.1.12",
@@ -52,6 +54,10 @@
     "remix-auth-form": "^1.1.2"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.16.1",
+    "@graphql-codegen/typescript": "2.8.5",
+    "@graphql-codegen/typescript-graphql-request": "^4.5.8",
+    "@graphql-codegen/typescript-operations": "^2.5.10",
     "@remix-run/dev": "^1.7.6",
     "@remix-run/eslint-config": "^1.7.6",
     "@remix-run/serve": "^1.7.6",

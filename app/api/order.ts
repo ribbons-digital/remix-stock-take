@@ -6,12 +6,29 @@ import type {
   UpdateOrderParamsType,
 } from "~/types";
 
+import { GraphQLClient } from "graphql-request";
+import { getSdk } from "../graphql/generated/graphql";
 import { sanity } from "../utils/sanity-client";
 
 export const getOrders = async () => {
   const query =
     '*[_type == "order"] | order(date desc) { _id, _key, orderNumber, orderedItems[]{ orderedItem->{_id, name, price}, quantity } , date}';
   return await sanity.fetch(query);
+};
+
+const client = new GraphQLClient(
+  "https://nomad-nature.myshopify.com/admin/api/2022-10/graphql.json",
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Access-Token": process.env.SHOPIFY_ADMIN_TOKEN!,
+    },
+  }
+);
+
+export const getShopifyOrders = async () => {
+  const sdk = getSdk(client);
+  return await sdk.Orders({ first: 10, reverse: true });
 };
 
 export const getMonthlyOrders = async () => {
