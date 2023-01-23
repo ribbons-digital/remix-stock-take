@@ -14,7 +14,7 @@ export const getProducts = async () => {
   // const query =
   // '*[_type == "product"]{ _id, _key, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity }, "orders": *[_type=="order" && references(^._id)]{ _id, orderNumber } }';
   const query =
-    '*[_type == "product"]{ _id, name, orders, price, items[]->{_id, quantity} }';
+    '*[_type == "product"]{ _id, name,shopifyId, shopifyVariantId, orders, price, items[]->{_id, quantity} }';
   return await sanity.fetch(query);
 };
 
@@ -38,7 +38,7 @@ export const getOrdersInProductByDateRange = async (
 
 export const getProduct = async ({ id }: { id: string }) => {
   // const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, quantity, "items": *[_type=="item" && references(^._id)]{ _id, name, quantity }, "orders": *[_type=="order" && references(^._id)]{ _id, orderNumber } }`;
-  const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, price,isKit, items[]->{_id, _key, name, quantity}, orders[]->{_id, orderNumber} }`;
+  const query = `*[_type == "product" && _id == "${id}"]{ _id, _key, name, shopifyId, shopifyVariantId, price,isKit, items[]->{_id, _key, name, quantity}, orders[]->{_id, orderNumber} }`;
   return await sanity.fetch(query);
 };
 
@@ -65,12 +65,16 @@ export const createProduct = async ({
   name,
   isKit = false,
   price = 0,
+  shopifyId,
+  shopifyVariantId,
 }: CreateProductParamsType) => {
   const product: SanityDocumentStub = {
     _type: "product",
     name,
     isKit,
     price,
+    shopifyId,
+    shopifyVariantId,
   };
   return await sanity.create(product, {
     autoGenerateArrayKeys: true,
@@ -125,14 +129,18 @@ export const updateProduct = async ({
   name,
   isKit = false,
   price = 0,
+  shopifyId,
+  shopifyVariantId,
 }: {
   id: string;
   name: string;
   isKit: boolean;
   price: number;
+  shopifyId: string;
+  shopifyVariantId: string;
 }) => {
   const product = await sanity
-    .patch(id, { set: { name, isKit, price } })
+    .patch(id, { set: { name, isKit, shopifyId, shopifyVariantId, price } })
     .commit();
 
   return product;

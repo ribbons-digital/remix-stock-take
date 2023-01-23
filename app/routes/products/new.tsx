@@ -13,11 +13,15 @@ export type ProductActionData = {
   fieldErrors?: {
     name: string | undefined;
     price: string | undefined;
+    shopifyId: string | undefined;
+    shopifyVariantId: string | undefined;
   };
   fields?: {
     name: string;
     isKit: boolean;
     price: string;
+    shopifyId: string;
+    shopifyVariantId: string;
   };
 };
 
@@ -32,12 +36,16 @@ export const action: ActionFunction = async ({ request }) => {
 
   const isKit = (form.get("isKit") as string) === "on" ? true : false;
   const price = form.get("salePrice") as string;
+  const shopifyId = form.get("shopifyId") as string;
+  const shopifyVariantId = form.get("shopifyVariantId") as string;
   const fieldErrors = {
     name: validatefieldContent(name),
-    // quantity: validatefieldContent(quantity),
+    price: validatefieldContent(price),
+    shopifyId: validatefieldContent(shopifyId),
+    shopifyVariantId: validatefieldContent(shopifyVariantId),
   };
 
-  const fields = { name, price };
+  const fields = { name, isKit, price, shopifyId, shopifyVariantId };
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({
       fieldErrors,
@@ -48,6 +56,8 @@ export const action: ActionFunction = async ({ request }) => {
   const product = await createProduct({
     name,
     isKit,
+    shopifyId,
+    shopifyVariantId,
     price: Number(price),
   });
   return redirect(`/products/${product._id}`);

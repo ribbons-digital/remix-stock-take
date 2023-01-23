@@ -8,6 +8,8 @@ export type ProductType = {
   items: ItemType[];
   orders: OrderType[];
   price: number;
+  shopifyId: string;
+  shopifyVariantId: string;
 };
 
 export type OrderType = {
@@ -64,6 +66,8 @@ export type CreateProductParamsType = {
   name: string;
   isKit: boolean;
   price: number;
+  shopifyId: string;
+  shopifyVariantId: string;
   // items: SanityReferenceType[];
 };
 
@@ -91,6 +95,7 @@ export type CreateItemParamsType = {
   name: string;
   quantity: string;
   cost: number;
+  shopifyId: string;
 };
 
 export type SanityReferenceType = {

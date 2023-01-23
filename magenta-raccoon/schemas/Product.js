@@ -26,6 +26,16 @@ export default {
       initialValue: false,
     },
     {
+      name: "shopifyId",
+      type: "string",
+      title: "Shopify ID",
+    },
+    {
+      name: "shopifyVariantId",
+      type: "string",
+      title: "Shopify Variant ID",
+    },
+    {
       name: "price",
       type: "number",
       initialValue: 0,

@@ -45,29 +45,67 @@ export default function ProductForm({ product, items }: ProductFormProps) {
             : ""}
         </Button>
       </div>
-      <div>
-        <div className="flex items-end justify-between">
-          <div className="w-full">
-            <TextInput
-              id="productName"
-              name="productName"
-              label="Product Name"
-              type="text"
-              defaultValue={product ? product.name : actionData?.fields?.name}
-              sx={{ py: 1, width: "100%" }}
-              aria-invalid={Boolean(actionData?.fieldErrors?.name) || undefined}
-              aria-describedby={
-                actionData?.fieldErrors?.name ? "name-error" : undefined
-              }
-            />
-          </div>
-        </div>
-        {actionData?.fieldErrors?.name ? (
-          <p className="text-red-600" role="alert" id="name-error">
-            {actionData.fieldErrors.name}
-          </p>
-        ) : null}
-      </div>
+      <TextInput
+        id="productName"
+        name="productName"
+        label="Product Name"
+        type="text"
+        defaultValue={product ? product.name : actionData?.fields?.name}
+        sx={{ py: 1, width: "100%" }}
+        aria-invalid={Boolean(actionData?.fieldErrors?.name) || undefined}
+        aria-describedby={
+          actionData?.fieldErrors?.name ? "name-error" : undefined
+        }
+      />
+      {actionData?.fieldErrors?.name ? (
+        <p className="text-red-600" role="alert" id="name-error">
+          {actionData.fieldErrors.name}
+        </p>
+      ) : null}
+      <TextInput
+        id="shopifyId"
+        name="shopifyId"
+        label="Shopify ID"
+        type="text"
+        defaultValue={
+          product ? product.shopifyId : actionData?.fields?.shopifyId
+        }
+        sx={{ py: 1, width: "100%" }}
+        aria-invalid={Boolean(actionData?.fieldErrors?.shopifyId) || undefined}
+        aria-describedby={
+          actionData?.fieldErrors?.shopifyId ? "shopifyId-error" : undefined
+        }
+      />
+      {actionData?.fieldErrors?.shopifyId ? (
+        <p className="text-red-600" role="alert" id="shopifyId-error">
+          {actionData.fieldErrors.shopifyId}
+        </p>
+      ) : null}
+      <TextInput
+        id="shopifyVariantId"
+        name="shopifyVariantId"
+        label="Shopify Variant ID"
+        type="text"
+        defaultValue={
+          product
+            ? product.shopifyVariantId
+            : actionData?.fields?.shopifyVariantId
+        }
+        sx={{ py: 1, width: "100%" }}
+        aria-invalid={
+          Boolean(actionData?.fieldErrors?.shopifyVariantId) || undefined
+        }
+        aria-describedby={
+          actionData?.fieldErrors?.shopifyVariantId
+            ? "shopifyId-error"
+            : undefined
+        }
+      />
+      {actionData?.fieldErrors?.shopifyVariantId ? (
+        <p className="text-red-600" role="alert" id="shopifyVariantId-error">
+          {actionData.fieldErrors.shopifyVariantId}
+        </p>
+      ) : null}
       <TextInput
         id="salePrice"
         name="salePrice"

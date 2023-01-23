@@ -1,16 +1,16 @@
 import type { SanityDocumentStub } from "@sanity/client";
-import type { CreateItemParamsType, ItemType } from "~/types";
+import type { CreateItemParamsType } from "~/types";
 
 import { sanity } from "../utils/sanity-client";
 
 export const getItems = async () => {
   const query =
-    '*[_type == "item"]{ _id, _key, name, quantity, cost, "inProduct": *[_type=="product" && references(^._id)]{ _id, name } }';
+    '*[_type == "item"]{ _id, _key, name, shopifyId, quantity, cost, "inProduct": *[_type=="product" && references(^._id)]{ _id, name } }';
   return await sanity.fetch(query);
 };
 
 export const getItem = async (id: string) => {
-  const query = `*[_type == "item" && _id == "${id}"]{ _id, _key, name, quantity, cost, "inProduct": *[_type=="product" && references(^._id)]{ _id, name } }`;
+  const query = `*[_type == "item" && _id == "${id}"]{ _id, _key, name, shopifyID, quantity, cost, "inProduct": *[_type=="product" && references(^._id)]{ _id, name } }`;
   return await sanity.fetch(query);
 };
 
@@ -18,12 +18,14 @@ export const createItem = async ({
   name,
   quantity,
   cost,
+  shopifyId,
 }: CreateItemParamsType) => {
   const item: SanityDocumentStub = {
     _type: "item",
     name,
     quantity,
     cost,
+    shopifyId,
   };
   return await sanity.create(item, {
     autoGenerateArrayKeys: true,
@@ -35,11 +37,13 @@ export const updateItem = async ({
   name,
   quantity,
   cost,
+  shopifyId,
   inProduct,
 }: {
   id: string;
   name: string;
   quantity: number;
+  shopifyId: string;
   cost: number;
   inProduct?: {
     _type: string;
@@ -49,10 +53,12 @@ export const updateItem = async ({
   let item;
   if (inProduct) {
     item = await sanity
-      .patch(id, { set: { name, cost, quantity, inProduct } })
+      .patch(id, { set: { name, cost, shopifyId, quantity, inProduct } })
       .commit();
   } else {
-    item = await sanity.patch(id, { set: { name, quantity, cost } }).commit();
+    item = await sanity
+      .patch(id, { set: { name, shopifyId, quantity, cost } })
+      .commit();
   }
   return item;
 };

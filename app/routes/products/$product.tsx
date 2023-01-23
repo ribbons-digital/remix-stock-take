@@ -46,15 +46,19 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const isKit = (form.get("isKit") as string) === "on" ? true : false;
   const price = form.get("salePrice") as string;
+  const shopifyId = form.get("shopifyId") as string;
+  const shopifyVariantId = form.get("shopifyVariantId") as string;
   const deleteItem = form.get("deleteItem") as string;
   const addItem = form.get("addItem") as string;
 
   const fieldErrors = {
     name: validatefieldContent(name),
     price: validatefieldContent(price),
+    shopifyId: validatefieldContent(shopifyId),
+    shopifyVariantId: validatefieldContent(shopifyVariantId),
   };
 
-  const fields = { name, isKit, price };
+  const fields = { name, isKit, price, shopifyId, shopifyVariantId };
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({
       fieldErrors,
@@ -83,7 +87,14 @@ export const action: ActionFunction = async ({ request, params }) => {
     return redirect(`/products/${params.product}`);
   } else {
     const id = form.get("submit") as string;
-    await updateProduct({ id, name, isKit, price: Number(price) });
+    await updateProduct({
+      id,
+      name,
+      isKit,
+      price: Number(price),
+      shopifyId,
+      shopifyVariantId,
+    });
 
     return redirect("/products");
   }

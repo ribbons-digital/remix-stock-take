@@ -19,6 +19,11 @@ export default {
       title: "Cost",
     },
     {
+      name: "shopifyId",
+      type: "string",
+      title: "Shopify ID",
+    },
+    {
       name: "inProduct",
       type: "array",
       title: "In Product",
